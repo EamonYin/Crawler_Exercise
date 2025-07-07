@@ -23,9 +23,10 @@ public class TOEastmoney {
         WebDriver webDriver = new ChromeDriver(chromeOptions);
 
         webDriver.get(uri);
-        WebElement webElements = webDriver.findElement(By.className("blinkred"));
-//        String stockPrice = webElements.getText();
-        System.out.println("最新股价为 >>> {}"+webElements);
+        // 网页上class的形式是有空格的<span class="price_up blinkred">47.20</span>
+        WebElement webElements = webDriver.findElement(By.cssSelector(".price_up.blinkred"));
+        String stockPrice = webElements.getText();
+        System.out.println("最新股价为 >>> {}"+stockPrice);
         webDriver.close();
         return "stockPrice";
     }

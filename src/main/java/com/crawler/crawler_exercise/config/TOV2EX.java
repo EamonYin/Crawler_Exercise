@@ -37,18 +37,21 @@ public class TOV2EX {
             String title = titleElement.getText();
             // 点击
             titleElement.click();
-            log.info("[点击]新页面地址:{}",chromeDriver.getCurrentUrl());
-            log.info("[点击]新页面的标题:{}",chromeDriver.getTitle());
+            log.info("[点击]新页面地址:{}", chromeDriver.getCurrentUrl());
+            log.info("[点击]新页面的标题:{}", chromeDriver.getTitle());
             Thread.sleep(10);
+            // 获取新页面元素
+            WebElement newPageElement = chromeDriver.findElement(By.cssSelector(".topic_content"));
+            log.info("[点击]新页面的内容:{}", newPageElement.getText());
             // 获取内容
             v2EXInfo.setSort(i);
             v2EXInfo.setTitle(title);
-            v2EXInfo.setInfo(chromeDriver.getTitle());
+            v2EXInfo.setInfo(newPageElement.getText());
             titleLst.add(v2EXInfo);
             Thread.sleep(10);
             chromeDriver.navigate().back();
-            log.info("[返回]新页面的标题:{}",chromeDriver.getCurrentUrl());
-             //重新赋值
+            log.info("[返回]新页面的链接:{}", chromeDriver.getCurrentUrl());
+            //重新赋值
             elements = chromeDriver.findElements(By.cssSelector(".cell.item"));
         }
         chromeDriver.close();

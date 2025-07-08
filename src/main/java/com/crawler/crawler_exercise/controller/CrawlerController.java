@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.crawler.crawler_exercise.config.TOBaiDu;
 import com.crawler.crawler_exercise.config.TOEastmoney;
 import com.crawler.crawler_exercise.config.TOV2EX;
+import com.crawler.crawler_exercise.entiy.V2EXInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -30,7 +31,7 @@ public class CrawlerController {
 //        log.info("这里是Controller的输出:{}", result);
 
         TOV2EX tov2EX = new TOV2EX();
-        List<String> v2EXInfo = tov2EX.getV2EXInfo();
+        List<V2EXInfo> v2EXInfo = tov2EX.getV2EXInfo();
         log.info("抓取V2EX标题:{}", JSON.toJSONString(v2EXInfo));
 
     }

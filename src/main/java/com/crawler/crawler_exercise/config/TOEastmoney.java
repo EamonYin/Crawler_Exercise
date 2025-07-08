@@ -1,11 +1,12 @@
 package com.crawler.crawler_exercise.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
+@Slf4j
 public class TOEastmoney {
     public String seleniumProcess() {
 
@@ -26,8 +27,8 @@ public class TOEastmoney {
         // 网页上class的形式是有空格的<span class="price_up blinkred">47.20</span>
         WebElement webElements = webDriver.findElement(By.cssSelector(".price_up.blinkred"));
         String stockPrice = webElements.getText();
-        System.out.println("最新股价为 >>> {}"+stockPrice);
+        log.info("TOEastmoney输出的内容,最新股价为 >>> {}", stockPrice);
         webDriver.close();
-        return "stockPrice";
+        return stockPrice;
     }
 }

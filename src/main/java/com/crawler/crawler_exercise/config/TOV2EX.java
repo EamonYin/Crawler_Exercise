@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 public class TOV2EX {
-    public List<V2EXInfo> getV2EXInfo() {
+    public List<V2EXInfo> getV2EXInfo() throws InterruptedException {
 
         String url = "https://www.v2ex.com/";
         ChromeOptions chromeOptions = new ChromeOptions();
@@ -29,23 +29,27 @@ public class TOV2EX {
         List<V2EXInfo> titleLst = new ArrayList<>();
         // 获取外层元素
         List<WebElement> elements = chromeDriver.findElements(By.cssSelector(".cell.item"));
-        for (int i = 1; i < elements.size(); i++) {
+        for (int i = 0; i < elements.size(); i++) {
             V2EXInfo v2EXInfo = new V2EXInfo();
             // 获取内层元素
             WebElement v2EXElement = elements.get(i);
             WebElement titleElement = v2EXElement.findElement(By.cssSelector(".item_title"));
+            String title = titleElement.getText();
             // 点击
             titleElement.click();
             log.info("[点击]新页面地址:{}",chromeDriver.getCurrentUrl());
             log.info("[点击]新页面的标题:{}",chromeDriver.getTitle());
-
+            Thread.sleep(10);
             // 获取内容
-            String title = titleElement.getText();
             v2EXInfo.setSort(i);
             v2EXInfo.setTitle(title);
             v2EXInfo.setInfo(chromeDriver.getTitle());
             titleLst.add(v2EXInfo);
-//            System.out.println("getV2EXInfo输出内容:【" + title+"】");
+            Thread.sleep(10);
+            chromeDriver.navigate().back();
+            log.info("[返回]新页面的标题:{}",chromeDriver.getCurrentUrl());
+             //重新赋值
+            elements = chromeDriver.findElements(By.cssSelector(".cell.item"));
         }
         chromeDriver.close();
         return titleLst;

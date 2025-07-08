@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 public class CrawlerController {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         String result = "";
 
 //        CrawlerController crawlerController = new CrawlerController();

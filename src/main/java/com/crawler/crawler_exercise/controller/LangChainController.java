@@ -27,12 +27,7 @@ public class LangChainController {
                 .timeout(Duration.ofSeconds(30))
                 .build();
         UserMessage userMessage = new UserMessage(speak);
-//        ChatRequest build = new ChatRequest.Builder().messages(userMessage).build();
-//        ChatResponse chat = demo.chat(build);
-//        String result = chat.aiMessage().toString();
-
         String result = demo.generate(userMessage).content().toString();
-
         log.info("【AI回复】:{}", result);
     }
 

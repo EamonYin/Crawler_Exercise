@@ -36,14 +36,4 @@ public class CrawlerController {
 
     }
 
-    @GetMapping("/getKey")
-    public void getKey(){
-        System.out.println(yunWuConfig.getKey());
-    }
-
-
-
-
-
-
 }

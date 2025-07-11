@@ -1,22 +1,21 @@
 package com.crawler.crawler_exercise.controller;
 
-
-import com.alibaba.fastjson.JSON;
-import com.crawler.crawler_exercise.config.TOBaiDu;
-import com.crawler.crawler_exercise.config.TOEastmoney;
-import com.crawler.crawler_exercise.config.TOV2EX;
-import com.crawler.crawler_exercise.entiy.V2EXInfo;
+import com.crawler.crawler_exercise.config.YunWuConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import javax.annotation.Resource;
 
 @Slf4j
+@RestController
+@RequestMapping("/crawler")
 public class CrawlerController {
+
+    @Resource
+    YunWuConfig yunWuConfig;
+
     public static void main(String[] args) throws InterruptedException {
         String result = "";
 
@@ -29,12 +28,21 @@ public class CrawlerController {
 //        TOEastmoney toEastmoney = new TOEastmoney();
 //        result = toEastmoney.seleniumProcess();
 //        log.info("这里是Controller的输出:{}", result);
+//
+//        TOV2EX tov2EX = new TOV2EX();
+//        List<V2EXInfo> v2EXInfo = tov2EX.getV2EXInfo();
+//        log.info("抓取V2EX标题:{}", JSON.toJSONString(v2EXInfo));
 
-        TOV2EX tov2EX = new TOV2EX();
-        List<V2EXInfo> v2EXInfo = tov2EX.getV2EXInfo();
-        log.info("抓取V2EX标题:{}", JSON.toJSONString(v2EXInfo));
+
+
 
     }
+
+    @GetMapping("/getKey")
+    public void getKey(){
+        System.out.println(yunWuConfig.getKey());
+    }
+
 
 
 

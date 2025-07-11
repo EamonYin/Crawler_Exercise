@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class TOV2EX {
@@ -40,7 +41,7 @@ public class TOV2EX {
             log.info("[点击]新页面地址:{}", chromeDriver.getCurrentUrl());
             log.info("[点击]新页面的标题:{}", chromeDriver.getTitle());
 //            Thread.sleep(30);
-            chromeDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
+            chromeDriver.manage().timeouts().implicitlyWait(2L, TimeUnit.SECONDS);
             // 获取新页面元素
             try{
                 WebElement newPageElement = chromeDriver.findElement(By.cssSelector(".topic_content"));

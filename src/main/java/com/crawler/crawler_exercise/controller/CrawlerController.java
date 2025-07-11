@@ -2,9 +2,7 @@ package com.crawler.crawler_exercise.controller;
 
 import com.crawler.crawler_exercise.config.YunWuConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -42,6 +40,8 @@ public class CrawlerController {
     public void getKey(){
         System.out.println(yunWuConfig.getKey());
     }
+
+
 
 
 

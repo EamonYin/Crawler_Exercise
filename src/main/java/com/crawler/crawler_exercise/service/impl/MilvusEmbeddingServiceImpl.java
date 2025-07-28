@@ -40,13 +40,13 @@ public class MilvusEmbeddingServiceImpl implements IMilvusEmbeddingService {
     }
 
     @Override
-    public void getMilvusInfo() {
+    public String getMilvusInfo(String problem) {
         // 创建MilvusEmbeddingStore存储对象
         EmbeddingStore<TextSegment> embeddingStore = milvusConfig.getMilvusEmbeddingStore();
         // 嵌入模型
         EmbeddingModel embeddingModel = milvusConfig.getEmbeddingModel();
         // 搜索
-        Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
+        Embedding queryEmbedding = embeddingModel.embed(problem).content();
         EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                 .queryEmbedding(queryEmbedding)
                 .maxResults(1)
@@ -55,5 +55,7 @@ public class MilvusEmbeddingServiceImpl implements IMilvusEmbeddingService {
         EmbeddingMatch<TextSegment> embeddingMatch = matches.get(0);
 
         log.info("/getMilvusInfo score:{},text:{}",embeddingMatch.score(),embeddingMatch.embedded().text());
+
+        return embeddingMatch.embedded().text();
     }
 }

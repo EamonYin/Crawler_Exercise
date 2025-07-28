@@ -65,8 +65,10 @@ public class LangChainController {
     }
 
     @GetMapping("/getMilvusInfo")
-    public void getMilvusInfo(){
-        milvusEmbeddingService.getMilvusInfo();
+    public String getMilvusInfo(@RequestParam String problem) {
+        String msg = milvusEmbeddingService.getMilvusInfo(problem);
+
+        return "回复内容:" + msg;
     }
 
 }

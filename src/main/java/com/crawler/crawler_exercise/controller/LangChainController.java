@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/LangChain")
@@ -25,20 +27,25 @@ public class LangChainController {
     @PostMapping("/langchainInfo")
     public void langchainInfo(@RequestBody String speak) {
         log.info("【用户说】:{}", speak);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String now = sdf.format(new Date());
+        log.info("当前时间:{}", now);
+
         OpenAiChatModel model = OpenAiChatModel.builder()
                 .baseUrl("https://yunwu.ai/v1")
                 .apiKey(yunWuConfig.getKey())
                 .modelName("qwen3-1.7b")
                 .timeout(Duration.ofSeconds(30))
                 .build();
-
+        // 老版基础版本
 //        UserMessage userMessage = new UserMessage(speak);
 //        ChatRequest build = new ChatRequest.Builder().messages(userMessage).toolSpecifications().build();
 //        ChatResponse chat = model.chat(build);
 //        String result = chat.aiMessage().toString();
-
+        // 新版本,可以加rag或其他工具
         MyAiAssistant assistant = AiServices.builder(MyAiAssistant.class)
-                .systemMessageProvider(obj -> "You are in Beijing. You are a friendly assistant.")
+                .systemMessageProvider(obj -> "You are in Beijing. You are a friendly assistant." + "The current time is China Standard Time:" + now)
                 .chatLanguageModel(model)
                 .tools()
                 .build();

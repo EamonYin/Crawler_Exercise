@@ -64,8 +64,9 @@ public class LangChainController {
         milvusEmbeddingService.insertMilvusInfo();
     }
 
-    @GetMapping("/getMilvusInfo")
-    public String getMilvusInfo(@RequestParam String problem) {
+    // 从Milvus向量数据库中寻找问题的答案并返回
+    @GetMapping("/getMilvusAnswer")
+    public String getMilvusAnswer(@RequestParam String problem) {
         String msg = milvusEmbeddingService.getMilvusInfo(problem);
 
         return "回复内容:" + msg;

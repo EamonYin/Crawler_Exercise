@@ -111,9 +111,23 @@
             <artifactId>langchain4j-easy-rag</artifactId>
             <version>0.35.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-milvus</artifactId>
+            <version>0.35.0</version>
+        </dependency>
         <!-- langchain 结束 -->
 
-<!--        <dependency>-->
+        <!-- 向量数据库 start-->
+        <dependency>
+            <groupId>io.milvus</groupId>
+            <artifactId>milvus-sdk-java</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+        <!-- 向量数据库 end-->
+
+        <!--        <dependency>-->
 <!--            <groupId>com.baomidou</groupId>-->
 <!--            <artifactId>mybatis-plus-boot-starter</artifactId>-->
 <!--            <version>3.5.12</version>-->

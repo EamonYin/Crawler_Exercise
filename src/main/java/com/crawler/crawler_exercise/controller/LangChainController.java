@@ -1,6 +1,7 @@
 package com.crawler.crawler_exercise.controller;
 
 import com.crawler.crawler_exercise.config.YunWuConfig;
+import com.crawler.crawler_exercise.service.IMilvusEmbeddingService;
 import com.crawler.crawler_exercise.service.MyAiAssistant;
 import dev.ai4j.openai4j.chat.ResponseFormat;
 import dev.langchain4j.data.message.UserMessage;
@@ -9,6 +10,7 @@ import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,6 +25,9 @@ public class LangChainController {
 
     @Resource
     YunWuConfig yunWuConfig;
+
+    @Autowired
+    IMilvusEmbeddingService milvusEmbeddingService;
 
     @PostMapping("/langchainInfo")
     public void langchainInfo(@RequestBody String speak) {
@@ -52,6 +57,16 @@ public class LangChainController {
         String result = assistant.chat(speak);
 
         log.info("【AI回复】:{}", result);
+    }
+
+    @PostMapping("/insertMilvusInfo")
+    public void insertMilvusInfo(){
+        milvusEmbeddingService.insertMilvusInfo();
+    }
+
+    @GetMapping("/getMilvusInfo")
+    public void getMilvusInfo(){
+        milvusEmbeddingService.getMilvusInfo();
     }
 
 }

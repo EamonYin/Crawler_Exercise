@@ -33,6 +33,20 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- MyBatis Plus Starter (核心依赖) -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+
+        <!-- MySQL 驱动 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!--爬虫 start-->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -117,6 +131,15 @@
             <artifactId>langchain4j-milvus</artifactId>
             <version>0.35.0</version>
         </dependency>
+
+        <!-- 中文分词 start-->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-hugging-face</artifactId>
+            <version>0.35.0</version>
+        </dependency>
+        <!-- 中文分词 end-->
+
         <!-- langchain 结束 -->
 
         <!-- 向量数据库 start-->

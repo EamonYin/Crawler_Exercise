@@ -47,6 +47,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Spring Data Redis 核心依赖（自动包含 Lettuce 客户端） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!--爬虫 start-->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>

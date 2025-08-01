@@ -7,6 +7,7 @@ import dev.langchain4j.model.huggingface.HuggingFaceEmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,10 @@ import org.springframework.stereotype.Component;
 public class MilvusConfig {
     private String url;
     private String collectionName;
+    @Autowired
+    private HuggingFaceConfig huggingFaceConfig;
+
+
 
     public EmbeddingStore<TextSegment> getMilvusEmbeddingStore(){
         // 创建MilvusEmbeddingStore存储对象
@@ -31,9 +36,10 @@ public class MilvusConfig {
     }
 
     public EmbeddingModel getZhEmbeddingModel(){
-        return HuggingFaceEmbeddingModel.builder()
-                .modelId("BAAI/bge-large-zh-v1.5") // 中文优化模型
-                .accessToken("") // 如果模型是私有的或限速，需要 token
-                .build();
+//        return HuggingFaceEmbeddingModel.builder()
+//                .modelId("BAAI/bge-large-zh-v1.5") // 中文优化模型
+//                .accessToken(huggingFaceConfig.getToken()) // 如果模型是私有的或限速，需要 token
+//                .build();
+        return new BgeSmallEnV15QuantizedEmbeddingModel();
     }
 }

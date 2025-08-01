@@ -29,7 +29,6 @@ public class MilvusEmbeddingServiceImpl implements IMilvusEmbeddingService {
         EmbeddingStore<TextSegment> embeddingStore = milvusConfig.getMilvusEmbeddingStore();
         // 嵌入模型
         EmbeddingModel embeddingModel = milvusConfig.getEmbeddingModel();
-        EmbeddingModel zhEmbeddingModel = milvusConfig.getZhEmbeddingModel();
         // 将数据向量化并存入milvus
         TextSegment segment1 = TextSegment.from("I like football.");
         Embedding embedding1 = embeddingModel.embed(segment1).content();
@@ -40,8 +39,8 @@ public class MilvusEmbeddingServiceImpl implements IMilvusEmbeddingService {
         embeddingStore.add(embedding2, segment2);
 
         TextSegment zhSegment1 = TextSegment.from("今天是个晴天。");
-        Embedding zhEmbedding1 = zhEmbeddingModel.embed(zhSegment1).content();
-        embeddingStore.add(zhEmbedding1, segment2);
+        Embedding zhEmbedding1 = embeddingModel.embed(zhSegment1).content();
+        embeddingStore.add(zhEmbedding1, zhSegment1);
 
     }
 
@@ -51,7 +50,6 @@ public class MilvusEmbeddingServiceImpl implements IMilvusEmbeddingService {
         EmbeddingStore<TextSegment> embeddingStore = milvusConfig.getMilvusEmbeddingStore();
         // 嵌入模型
         EmbeddingModel embeddingModel = milvusConfig.getEmbeddingModel();
-        EmbeddingModel zhEmbeddingModel = milvusConfig.getZhEmbeddingModel();
         // 搜索
         Embedding queryEmbedding = embeddingModel.embed(problem).content();
         EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()

@@ -3,10 +3,12 @@ package com.crawler.crawler_exercise;
 import com.crawler.crawler_exercise.config.YunWuConfig;
 import com.crawler.crawler_exercise.entiy.CrawlerInfo;
 import com.crawler.crawler_exercise.service.ICrawlerInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.concurrent.CountDownLatch;
@@ -15,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
+@Slf4j
 class CrawlerExerciseApplicationTests {
 
     @Resource
@@ -143,6 +146,7 @@ class CrawlerExerciseApplicationTests {
      * @throws InterruptedException
      */
     @Test
+    @Transactional
     void testMysqlRowLockWithTransaction() throws InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         CountDownLatch latch = new CountDownLatch(2);
@@ -164,13 +168,15 @@ class CrawlerExerciseApplicationTests {
         // 线程2：尝试更新同一行（会被阻塞）
         executor.submit(() -> {
             try {
-                Thread.sleep(500);
+                Thread.sleep(500); // 线程2的等待时间小于线程1的长事务，所以会被线程1的结果覆盖
+//                Thread.sleep(9000); // 大于“线程1模拟的长事务5000ms+更新表时间”即可正常更新线程2的数据到数据库中
                 System.out.println("线程2开始更新，时间：" + System.currentTimeMillis());
                 CrawlerInfo updateData = new CrawlerInfo();
                 updateData.setId(1L);
                 updateData.setInfo("线程2快速更新");
                 crawlerInfoService.updateById(updateData);
                 System.out.println("线程2更新完成，时间：" + System.currentTimeMillis());
+                log.info("线程2务更新完成，ID: {}, 线程: {}", 1, Thread.currentThread().getName());
             } catch (Exception e) {
                 System.err.println("线程2失败: " + e.getMessage());
             } finally {

@@ -13,6 +13,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 并发情况下，mysql的行锁测试
+ */
 @SpringBootTest
 @Slf4j
 public class AsynRowLockTests {

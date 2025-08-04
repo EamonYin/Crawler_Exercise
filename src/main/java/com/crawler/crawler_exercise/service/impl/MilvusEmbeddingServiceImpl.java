@@ -46,6 +46,18 @@ public class MilvusEmbeddingServiceImpl implements IMilvusEmbeddingService {
     }
 
     @Override
+    public void insertMilvusData(String data) {
+        // 创建MilvusEmbeddingStore存储对象
+        EmbeddingStore<TextSegment> embeddingStore = milvusConfig.getMilvusEmbeddingStore();
+        // 嵌入模型
+        EmbeddingModel embeddingModel = milvusConfig.getEmbeddingModel();
+
+        TextSegment segment = TextSegment.from(data);
+        Embedding embedding = embeddingModel.embed(segment).content();
+        embeddingStore.add(embedding, segment);
+    }
+
+    @Override
     public String getMilvusInfo(String problem) {
         // 创建MilvusEmbeddingStore存储对象
         EmbeddingStore<TextSegment> embeddingStore = milvusConfig.getMilvusEmbeddingStore();

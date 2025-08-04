@@ -60,8 +60,18 @@ public class LangChainController {
     }
 
     @PostMapping("/insertMilvusInfo")
-    public void insertMilvusInfo(){
+    public void insertMilvusInfo() {
         milvusEmbeddingService.insertMilvusInfo();
+    }
+
+    @PostMapping("/insertMilvusData")
+    public String insertMilvusData(@RequestBody String data) {
+        try {
+            milvusEmbeddingService.insertMilvusData(data);
+            return "success";
+        } catch (Exception e) {
+            return "failed";
+        }
     }
 
     // 从Milvus向量数据库中寻找问题的答案并返回
@@ -74,6 +84,7 @@ public class LangChainController {
 
     /**
      * Only use RAG information to answer the question.
+     *
      * @param speak
      * @return
      */
@@ -102,10 +113,11 @@ public class LangChainController {
 
     /**
      * Use LLM's common sense and RAG content to provide answers.
+     *
      * @param speak
      */
     @PostMapping("/langchainRagChat")
-    public void langchainRagChat(@RequestBody String speak) {
+    public String langchainRagChat(@RequestBody String speak) {
         log.info("【用户说】:{}", speak);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -127,7 +139,7 @@ public class LangChainController {
         String systemPrompt = "The current time is China Standard Time:" + now +
                 "\n\nUse the following retrieved context to help answer questions: " + ragContext +
                 "\n\nIf the context is relevant, incorporate it into your response. " +
-                "If not relevant, answer based on your general knowledge."+
+                "If not relevant, answer based on your general knowledge." +
                 "Only the final answer is given, without going back to the thinking or analysis process!";
 
         MyAiAssistant assistant = AiServices.builder(MyAiAssistant.class)
@@ -137,7 +149,7 @@ public class LangChainController {
                 .build();
 
         String result = assistant.chat(speak);
-        log.info("【AI回复】:{}", result);
+        return "【AI回复】:" + result;
     }
 
 }

@@ -128,10 +128,18 @@ public class LangChainController {
         String ragContext = milvusEmbeddingService.getMilvusInfo(speak);
         log.info("【RAG检索到的内容】:{}", ragContext);
 
+//        OpenAiChatModel model = OpenAiChatModel.builder()
+//                .baseUrl(yunWuConfig.getUrl())
+//                .apiKey(yunWuConfig.getKey())
+//                .modelName("qwen3-1.7b")
+//                .timeout(Duration.ofSeconds(30))
+//                .build();
+
+        // user localtion LLM to provide answers ~
         OpenAiChatModel model = OpenAiChatModel.builder()
-                .baseUrl(yunWuConfig.getUrl())
-                .apiKey(yunWuConfig.getKey())
-                .modelName("qwen3-1.7b")
+                .baseUrl("http://localhost:11434/v1")
+                .apiKey("ollama")
+                .modelName("qwen3:1.7b")
                 .timeout(Duration.ofSeconds(30))
                 .build();
 

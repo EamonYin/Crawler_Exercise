@@ -73,7 +73,7 @@ public class LangChainController {
     }
 
     /**
-     * only use RAG info to answer the question
+     * Only use RAG information to answer the question.
      * @param speak
      * @return
      */
@@ -101,7 +101,7 @@ public class LangChainController {
     }
 
     /**
-     * use LLM common sense and RAG content for answer
+     * Use LLM's common sense and RAG content to provide answers.
      * @param speak
      */
     @PostMapping("/langchainRagChat")

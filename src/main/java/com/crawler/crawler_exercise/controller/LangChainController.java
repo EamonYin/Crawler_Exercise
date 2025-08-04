@@ -38,7 +38,7 @@ public class LangChainController {
         log.info("当前时间:{}", now);
 
         OpenAiChatModel model = OpenAiChatModel.builder()
-                .baseUrl("https://yunwu.ai/v1")
+                .baseUrl(yunWuConfig.getUrl())
                 .apiKey(yunWuConfig.getKey())
                 .modelName("qwen3-1.7b")
                 .timeout(Duration.ofSeconds(30))
@@ -70,6 +70,74 @@ public class LangChainController {
         String msg = milvusEmbeddingService.getMilvusInfo(problem);
 
         return "回复内容:" + msg;
+    }
+
+    /**
+     * only use RAG info to answer the question
+     * @param speak
+     * @return
+     */
+    @PostMapping("/ragChat")
+    public String ragChat(@RequestBody String speak) {
+        String ragContext = milvusEmbeddingService.getMilvusInfo(speak);
+
+        String prompt = "Based on this context: " + ragContext +
+                "\n\nQuestion: " + speak +
+                "\n\nAnswer:";
+
+        OpenAiChatModel model = OpenAiChatModel.builder()
+                .baseUrl(yunWuConfig.getUrl())
+                .apiKey(yunWuConfig.getKey())
+                .modelName("qwen3-1.7b")
+                .timeout(Duration.ofSeconds(30))
+                .build();
+
+        // 直接使用模型回答
+        UserMessage userMessage = new UserMessage(prompt);
+        ChatRequest build = new ChatRequest.Builder().messages(userMessage).build();
+        ChatResponse chat = model.chat(build);
+
+        return chat.aiMessage().text();
+    }
+
+    /**
+     * use LLM common sense and RAG content for answer
+     * @param speak
+     */
+    @PostMapping("/langchainRagChat")
+    public void langchainRagChat(@RequestBody String speak) {
+        log.info("【用户说】:{}", speak);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String now = sdf.format(new Date());
+        log.info("当前时间:{}", now);
+
+        // 1. 先从Milvus检索相关内容
+        String ragContext = milvusEmbeddingService.getMilvusInfo(speak);
+        log.info("【RAG检索到的内容】:{}", ragContext);
+
+        OpenAiChatModel model = OpenAiChatModel.builder()
+                .baseUrl(yunWuConfig.getUrl())
+                .apiKey(yunWuConfig.getKey())
+                .modelName("qwen3-1.7b")
+                .timeout(Duration.ofSeconds(30))
+                .build();
+
+        // 2. 构建包含RAG内容的系统提示
+        String systemPrompt = "The current time is China Standard Time:" + now +
+                "\n\nUse the following retrieved context to help answer questions: " + ragContext +
+                "\n\nIf the context is relevant, incorporate it into your response. " +
+                "If not relevant, answer based on your general knowledge."+
+                "Only the final answer is given, without going back to the thinking or analysis process!";
+
+        MyAiAssistant assistant = AiServices.builder(MyAiAssistant.class)
+                .systemMessageProvider(obj -> systemPrompt)
+                .chatLanguageModel(model)
+                .tools()
+                .build();
+
+        String result = assistant.chat(speak);
+        log.info("【AI回复】:{}", result);
     }
 
 }

@@ -37,7 +37,7 @@ public class MilvusConfig {
 
     public EmbeddingModel getZhEmbeddingModel(){
 //        return HuggingFaceEmbeddingModel.builder()
-//                .modelId("BAAI/bge-large-zh-v1.5") // 中文优化模型
+//                .modelId("intfloat/multilingual-e5-large") // 中文优化模型
 //                .accessToken(huggingFaceConfig.getToken()) // 如果模型是私有的或限速，需要 token
 //                .build();
         return new BgeSmallEnV15QuantizedEmbeddingModel();

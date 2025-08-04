@@ -9,4 +9,5 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "yunwu")
 public class YunWuConfig {
     private String key;
+    private String url;
 }

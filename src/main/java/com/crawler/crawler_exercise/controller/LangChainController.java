@@ -148,7 +148,7 @@ public class LangChainController {
 //                .build();
 
         OpenAiChatModel model = OpenAiChatModel.builder()
-                .baseUrl("https://flowercui-eamongptv2.hf.space/v2")
+                .baseUrl("https://flowercui-eamongptv2.hf.space/v2") // /v2接口只返回assisant后面的内容；/v1会显示think的思考过程
                 .apiKey(huggingFaceConfig.getToken())
                 .modelName("qwen3-1.7b")
                 .temperature(0.7)

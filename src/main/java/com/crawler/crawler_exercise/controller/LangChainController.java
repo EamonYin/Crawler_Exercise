@@ -1,5 +1,6 @@
 package com.crawler.crawler_exercise.controller;
 
+import com.crawler.crawler_exercise.config.HuggingFaceConfig;
 import com.crawler.crawler_exercise.config.YunWuConfig;
 import com.crawler.crawler_exercise.service.IMilvusEmbeddingService;
 import com.crawler.crawler_exercise.service.MyAiAssistant;
@@ -25,6 +26,8 @@ public class LangChainController {
 
     @Resource
     YunWuConfig yunWuConfig;
+    @Resource
+    HuggingFaceConfig huggingFaceConfig;
 
     @Autowired
     IMilvusEmbeddingService milvusEmbeddingService;
@@ -136,11 +139,21 @@ public class LangChainController {
 //                .build();
 
         // user localtion LLM to provide answers ~
+        // "/v1" is a must for the OpenAI API!
+//        OpenAiChatModel model = OpenAiChatModel.builder()
+//                .baseUrl("http://localhost:11434/v1")
+//                .apiKey("ollama")
+//                .modelName("qwen3:1.7b")
+//                .timeout(Duration.ofSeconds(30))
+//                .build();
+
         OpenAiChatModel model = OpenAiChatModel.builder()
-                .baseUrl("http://localhost:11434/v1")
-                .apiKey("ollama")
-                .modelName("qwen3:1.7b")
-                .timeout(Duration.ofSeconds(30))
+                .baseUrl("https://flowercui-eamongptv2.hf.space/v2")
+                .apiKey(huggingFaceConfig.getToken())
+                .modelName("qwen3-1.7b")
+                .temperature(0.7)
+                .maxTokens(200)
+                .timeout(Duration.ofSeconds(60))
                 .build();
 
         // 2. 构建包含RAG内容的系统提示

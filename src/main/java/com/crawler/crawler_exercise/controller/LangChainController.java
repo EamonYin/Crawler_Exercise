@@ -147,8 +147,51 @@ public class LangChainController {
 //                .timeout(Duration.ofSeconds(30))
 //                .build();
 
+        /**
+         * /v1 会显示think的思考过程
+         * /v2 接口只返回assisant后面的内容
+         * /v3 有联网功能（目前无效！）
+         */
         OpenAiChatModel model = OpenAiChatModel.builder()
-                .baseUrl("https://flowercui-eamongptv2.hf.space/v2") // /v2接口只返回assisant后面的内容；/v1会显示think的思考过程
+                .baseUrl("https://flowercui-eamongptv2.hf.space/v2")
+                .apiKey(huggingFaceConfig.getToken())
+                .modelName("qwen3-1.7b")
+                .temperature(0.7)
+                .maxTokens(200)
+                .timeout(Duration.ofSeconds(60))
+                .build();
+
+        // 2. 构建包含RAG内容的系统提示
+        String systemPrompt = "The current time is China Standard Time:" + now +
+                "\n\nUse the following retrieved context to help answer questions: " + ragContext +
+                "\n\nIf the context is relevant, incorporate it into your response. " +
+                "If not relevant, answer based on your general knowledge." +
+                "Only the final answer is given, without going back to the thinking or analysis process!";
+
+        MyAiAssistant assistant = AiServices.builder(MyAiAssistant.class)
+                .systemMessageProvider(obj -> systemPrompt)
+                .chatLanguageModel(model)
+                .tools()
+                .build();
+
+        String result = assistant.chat(speak);
+        return "【AI回复】:" + result;
+    }
+
+    @PostMapping("/ragChatByWeb")
+    public String ragChatByWeb(@RequestBody String speak) {
+        log.info("【用户说】:{}", speak);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String now = sdf.format(new Date());
+        log.info("当前时间:{}", now);
+
+        // 1. 先从Milvus检索相关内容
+        String ragContext = milvusEmbeddingService.getMilvusInfo(speak);
+        log.info("【RAG检索到的内容】:{}", ragContext);
+
+        OpenAiChatModel model = OpenAiChatModel.builder()
+                .baseUrl("https://flowercui-eamongptv2.hf.space/v2")
                 .apiKey(huggingFaceConfig.getToken())
                 .modelName("qwen3-1.7b")
                 .temperature(0.7)

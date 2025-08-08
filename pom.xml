@@ -146,6 +146,22 @@
         </dependency>
         <!-- 中文分词 end-->
 
+        <!--大模型联网 start-->
+        <!-- SearXNG 网络搜索 目前需要JDK11，所以不满足需求只能用http请求-->
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-community-web-search-engine-searxng</artifactId>-->
+<!--            <version>0.36.0</version>-->
+<!--        </dependency>-->
+
+        <!-- SearchAPI 网络搜索 -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-web-search-engine-searchapi</artifactId>
+            <version>0.35.0</version>
+        </dependency>
+        <!--大模型联网 end-->
+
         <!-- langchain 结束 -->
 
         <!-- 向量数据库 start-->

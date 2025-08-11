@@ -9,4 +9,5 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "searxng")
 public class SearXNGConfig {
     private String url;
+    private String key;
 }

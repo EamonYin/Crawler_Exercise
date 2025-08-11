@@ -362,7 +362,8 @@ public class LangChainController {
             // 创建 HTTP GET 请求
             HttpGet httpGet = new HttpGet(searchUrl);
             httpGet.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36");
-            
+            httpGet.setHeader("searkey",searXNGConfig.getKey());
+
             // 执行请求并获取响应
             CloseableHttpResponse response = httpClient.execute(httpGet);
             

@@ -1,6 +1,7 @@
 package com.crawler.crawler_exercise.controller;
 
 import com.crawler.crawler_exercise.config.YunWuConfig;
+import com.crawler.crawler_exercise.utls.crawler.TOQwen;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +32,9 @@ public class CrawlerController {
 //        List<V2EXInfo> v2EXInfo = tov2EX.getV2EXInfo();
 //        log.info("抓取V2EX标题:{}", JSON.toJSONString(v2EXInfo));
 
-
-
+//
+//        TOQwen toQwen = new TOQwen();
+//        toQwen.loginInQwen();
 
     }
 

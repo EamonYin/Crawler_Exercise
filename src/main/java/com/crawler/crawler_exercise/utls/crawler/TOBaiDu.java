@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.config;
+package com.crawler.crawler_exercise.utls.crawler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;

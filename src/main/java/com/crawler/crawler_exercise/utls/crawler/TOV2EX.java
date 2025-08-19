@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.config;
+package com.crawler.crawler_exercise.utls.crawler;
 
 import com.crawler.crawler_exercise.entiy.V2EXInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -6,10 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

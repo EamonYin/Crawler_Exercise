@@ -14,7 +14,7 @@ class QwenTests {
 
     @Test
     void testQwen(){
-        qwenMsgService.sendSmsCN("13920834817");
+        qwenMsgService.sendSmsCN("15620964916");
     }
 
 }

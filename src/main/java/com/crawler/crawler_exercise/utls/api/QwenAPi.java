@@ -3,6 +3,7 @@ package com.crawler.crawler_exercise.utls.api;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +41,14 @@ public class QwenAPi {
 
                 if (!jsonResponse.getBoolean("hasError") &&
                         jsonResponse.getJSONObject("content").getBoolean("success")) {
-
-                    return jsonResponse.getJSONObject("content")
+                    String smsToken = jsonResponse.getJSONObject("content")
                             .getJSONObject("data")
                             .getString("smsToken");
+                    if(Objects.isNull(smsToken)){
+                        return "";
+                    }else {
+                        return smsToken;
+                    }
                 }
             } catch (Exception e) {
                 // JSON parsing failed, SMS send unsuccessful

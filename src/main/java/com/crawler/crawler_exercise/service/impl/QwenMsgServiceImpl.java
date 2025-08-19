@@ -9,6 +9,7 @@ import com.crawler.crawler_exercise.entiy.QwenMsg;
 import com.crawler.crawler_exercise.mapper.QwenMsgMapper;
 import com.crawler.crawler_exercise.service.IQwenMsgService;
 import com.crawler.crawler_exercise.utls.api.QwenAPi;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,23 +32,26 @@ public class QwenMsgServiceImpl extends ServiceImpl<QwenMsgMapper, QwenMsg> impl
             String countryCode = "CN";
             // 返回 smstoken
             String smstoken = qwenAPi.sendSms(phoneCode, phoneNum, countryCode);
-            // 删除所有存在的数据
-            UpdateWrapper<QwenMsg> qwenMsgUpdateWrapper = new UpdateWrapper<>();
-            qwenMsgUpdateWrapper.lambda().eq(QwenMsg::getDeFlg,0);
-            qwenMsgUpdateWrapper.set("de_flg",1);
-            this.update(qwenMsgUpdateWrapper);
-            // 插入新的数据
-            QwenMsg qwenMsg = new QwenMsg();
-            qwenMsg.setPhoneCode(phoneCode);
-            qwenMsg.setLoginId(phoneNum);
-            qwenMsg.setCountryCode(countryCode);
-            qwenMsg.setSmsToken(smstoken);
-            qwenMsg.setDeFlg(0);
-            qwenMsgMapper.insert(qwenMsg);
-            return smstoken;
+            if(StringUtils.isNoneBlank(smstoken)){
+                // 删除所有存在的数据
+                UpdateWrapper<QwenMsg> qwenMsgUpdateWrapper = new UpdateWrapper<>();
+                qwenMsgUpdateWrapper.lambda().eq(QwenMsg::getDeFlg,0);
+                qwenMsgUpdateWrapper.set("de_flg",1);
+                this.update(qwenMsgUpdateWrapper);
+                // 插入新的数据
+                QwenMsg qwenMsg = new QwenMsg();
+                qwenMsg.setPhoneCode(phoneCode);
+                qwenMsg.setLoginId(phoneNum);
+                qwenMsg.setCountryCode(countryCode);
+                qwenMsg.setSmsToken(smstoken);
+                qwenMsg.setDeFlg(0);
+                qwenMsgMapper.insert(qwenMsg);
+                return smstoken;
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return "获取次数已达上限，请24小时后再试";
     }
 
     @Override

@@ -3,10 +3,8 @@ package com.crawler.crawler_exercise.controller;
 import com.crawler.crawler_exercise.config.*;
 import com.crawler.crawler_exercise.entiy.LangchainRagChatDTO;
 import com.crawler.crawler_exercise.service.IMilvusEmbeddingService;
-import com.crawler.crawler_exercise.service.IQwenService;
+import com.crawler.crawler_exercise.service.IQwenMsgService;
 import com.crawler.crawler_exercise.service.MyAiAssistant;
-import com.crawler.crawler_exercise.utls.api.QwenAPi;
-import dev.ai4j.openai4j.chat.ResponseFormat;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.request.ChatRequest;
 import dev.langchain4j.model.chat.response.ChatResponse;
@@ -16,17 +14,13 @@ import dev.langchain4j.web.search.WebSearchEngine;
 import dev.langchain4j.web.search.WebSearchResults;
 import dev.langchain4j.web.search.searchapi.SearchApiWebSearchEngine;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
-import java.util.Objects;
 
 // HTTP 客户端相关导入
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -59,7 +53,7 @@ public class LangChainController {
     @Autowired
     IMilvusEmbeddingService milvusEmbeddingService;
     @Autowired
-    IQwenService qwenService;
+    IQwenMsgService qwenService;
 
     @PostMapping("/langchainInfo")
     public void langchainInfo(@RequestBody String speak) {

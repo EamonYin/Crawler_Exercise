@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.crawler.crawler_exercise.entiy.QwenMsg;
+import com.crawler.crawler_exercise.mapper.QwenMsgMapper;
 import com.crawler.crawler_exercise.service.IQwenMsgService;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -27,14 +28,14 @@ public class EamonGPTConfig {
 
     private final String redisKey = "eamonGptKey";
     @Autowired
-    private IQwenMsgService qwenMsgService;
+    private QwenMsgMapper qwenMsgMapper;
 
     public String getEamonGPTKey() {
         String key = redisTemplate.opsForValue().get(redisKey);
         if (StringUtils.isEmpty(key)) {
             LambdaUpdateWrapper<QwenMsg> qwenMsgLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
             qwenMsgLambdaUpdateWrapper.eq(QwenMsg::getDeFlg,0);
-            List<QwenMsg> list = qwenMsgService.list(qwenMsgLambdaUpdateWrapper);
+            List<QwenMsg> list = qwenMsgMapper.selectList(qwenMsgLambdaUpdateWrapper);
             if(CollectionUtils.isNotEmpty(list)){
                 QwenMsg qwenMsg = list.get(0);
                 redisTemplate.opsForValue().set(redisKey, qwenMsg.getTongyiSsoTicket());

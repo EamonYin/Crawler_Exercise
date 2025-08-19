@@ -34,7 +34,7 @@ public class QwenMsgServiceImpl extends ServiceImpl<QwenMsgMapper, QwenMsg> impl
             // 删除所有存在的数据
             UpdateWrapper<QwenMsg> qwenMsgUpdateWrapper = new UpdateWrapper<>();
             qwenMsgUpdateWrapper.lambda().eq(QwenMsg::getDeFlg,0);
-            qwenMsgUpdateWrapper.set("deFlg",1);
+            qwenMsgUpdateWrapper.set("de_flg",1);
             this.update(qwenMsgUpdateWrapper);
             // 插入新的数据
             QwenMsg qwenMsg = new QwenMsg();

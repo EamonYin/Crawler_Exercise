@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,6 +15,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+@Slf4j
 public class QwenAPi {
     public String sendSms(String phoneCode, String loginId, String countryCode) throws IOException {
         String SMS_API_URL = "https://passport.tongyi.com/havanaone/loginLegacy/sms/sendSms.do?bizEntrance=tongyi&bizName=tongyi";
@@ -32,7 +34,7 @@ public class QwenAPi {
 
         try (CloseableHttpResponse response = client.execute(post)) {
             String responseBody = EntityUtils.toString(response.getEntity());
-
+            log.info("qwen-sendSms返回:{}",responseBody);
             try {
                 JSONObject jsonResponse = JSONObject.parseObject(responseBody);
 
@@ -69,7 +71,7 @@ public class QwenAPi {
 
         try (CloseableHttpResponse response = client.execute(post)) {
             String responseBody = EntityUtils.toString(response.getEntity());
-
+            log.info("qwen-login返回:{}",responseBody);
             try {
                 JSONObject jsonResponse = JSONObject.parseObject(responseBody);
 

@@ -60,6 +60,8 @@ public class QwenMsgServiceImpl extends ServiceImpl<QwenMsgMapper, QwenMsg> impl
             QwenMsg qwenMsg = qwenMsgMapper.selectOne(qwenMsgLambdaQueryWrapper);
             // 获取票据
             String tongyiSsoTicket = qwenAPi.login(qwenMsg.getPhoneCode(), phoneNum, qwenMsg.getCountryCode(), qwenMsg.getSmsToken(), smsCode);
+            qwenMsg.setTongyiSsoTicket(tongyiSsoTicket);
+            qwenMsgMapper.updateById(qwenMsg);
             eamonGPTConfig.upDateEamonGPTKey(tongyiSsoTicket);
             return tongyiSsoTicket;
         } catch (IOException e) {

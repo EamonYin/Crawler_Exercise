@@ -2,17 +2,25 @@ package com.crawler.crawler_exercise;
 
 import com.alibaba.fastjson.JSON;
 import com.crawler.crawler_exercise.entiy.CrawlerInfo;
+import com.crawler.crawler_exercise.mapper.CrawlerInfoMapper;
 import com.crawler.crawler_exercise.service.ICrawlerInfoService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 import java.util.Date;
 import java.util.concurrent.*;
 
@@ -30,6 +38,11 @@ public class RedisMysqlDataConsistencyTest {
 
     @Autowired
     private TaskScheduler taskScheduler;
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private CrawlerInfoMapper crawlerInfoMapper;
 
     @Test
     void redisMysqlTest () throws InterruptedException {
@@ -93,6 +106,86 @@ public class RedisMysqlDataConsistencyTest {
         });
 
         latch.await(60, TimeUnit.SECONDS);
+        executor.shutdown();
+    }
+
+    @Test
+    @Transactional
+    void testMysqlRowLock(){
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        CountDownLatch latch = new CountDownLatch(2);
+
+        // 为每个线程创建独立的事务管理器
+        DataSourceTransactionManager transactionManager1 = new DataSourceTransactionManager(dataSource);
+        DataSourceTransactionManager transactionManager2 = new DataSourceTransactionManager(dataSource);
+        
+        // 创建事务定义
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
+        definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+
+        executor.submit(() -> {
+            try {
+                // 开启事务
+                TransactionStatus status1 = transactionManager1.getTransaction(definition);
+                System.out.println("线程1开启事务，时间：" + System.currentTimeMillis());
+                
+                CrawlerInfo crawlerInfo = new CrawlerInfo();
+                crawlerInfo.setId(5L);
+                crawlerInfo.setInfo("表锁测试1" + new Date().getTime());
+                crawlerInfo.setDeFlag(0);
+                
+                // 使用Mapper执行插入操作
+                crawlerInfoMapper.insert(crawlerInfo);
+                System.out.println("线程1执行插入操作完成，但不提交事务，时间：" + System.currentTimeMillis());
+                
+//                // 故意不提交事务，让线程2被阻塞
+//                Thread.sleep(5000); // 持有锁5秒钟
+//
+//                transactionManager1.commit(status1);
+                System.out.println("线程1事务提交成功，时间：" + new Date());
+            } catch (Exception e) {
+                System.out.println("线程1 rollback! 错误信息: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                latch.countDown();
+            }
+        });
+
+        executor.submit(() -> {
+            try {
+                Thread.sleep(3000); // 等待第一个线程先执行
+                System.out.println("线程2开始执行，尝试插入相同ID的数据，时间：" + new Date());
+                
+                // 开启事务
+                TransactionStatus status2 = transactionManager2.getTransaction(definition);
+                CrawlerInfo crawlerInfo = new CrawlerInfo();
+                // 使用相同的ID，这样会尝试获取相同的行锁
+                crawlerInfo.setId(5L); 
+                crawlerInfo.setInfo("表锁测试2" + new Date().getTime());
+                crawlerInfo.setDeFlag(0);
+                
+                // 这里会被阻塞，直到线程1释放锁
+                long startTime = System.currentTimeMillis();
+                crawlerInfoMapper.insert(crawlerInfo);
+                long endTime = System.currentTimeMillis();
+                
+                System.out.println("线程2插入操作完成，耗时：" + (endTime - startTime) + "ms");
+                transactionManager2.commit(status2);
+                System.out.println("线程2事务提交成功");
+            } catch (Exception e) {
+                System.out.println("线程2 rollback! 错误信息: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                latch.countDown();
+            }
+        });
+
+        try {
+            latch.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         executor.shutdown();
     }
 

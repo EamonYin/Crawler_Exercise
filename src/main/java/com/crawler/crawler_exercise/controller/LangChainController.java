@@ -1,9 +1,6 @@
 package com.crawler.crawler_exercise.controller;
 
-import com.crawler.crawler_exercise.config.HuggingFaceConfig;
-import com.crawler.crawler_exercise.config.SearXNGConfig;
-import com.crawler.crawler_exercise.config.SearchApiConfig;
-import com.crawler.crawler_exercise.config.YunWuConfig;
+import com.crawler.crawler_exercise.config.*;
 import com.crawler.crawler_exercise.entiy.LangchainRagChatDTO;
 import com.crawler.crawler_exercise.service.IMilvusEmbeddingService;
 import com.crawler.crawler_exercise.service.MyAiAssistant;
@@ -17,6 +14,7 @@ import dev.langchain4j.web.search.WebSearchEngine;
 import dev.langchain4j.web.search.WebSearchResults;
 import dev.langchain4j.web.search.searchapi.SearchApiWebSearchEngine;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
+import java.util.Objects;
 
 // HTTP 客户端相关导入
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -52,6 +51,8 @@ public class LangChainController {
     SearchApiConfig searchApiConfig;
     @Resource
     SearXNGConfig searXNGConfig;
+    @Resource
+    EamonGPTConfig eamonGPTConfig;
 
     @Autowired
     IMilvusEmbeddingService milvusEmbeddingService;
@@ -317,10 +318,17 @@ public class LangChainController {
         log.info("【SearXNG搜索结果】:{}", webSearchResults);
 
         // "/v1" is a must for the OpenAI API!
+//        OpenAiChatModel model = OpenAiChatModel.builder()
+//                .baseUrl("http://localhost:11434/v1")
+//                .apiKey("ollama")
+//                .modelName("qwen3:1.7b")
+//                .timeout(Duration.ofSeconds(30))
+//                .build();
+
         OpenAiChatModel model = OpenAiChatModel.builder()
-                .baseUrl("http://localhost:11434/v1")
-                .apiKey("ollama")
-                .modelName("qwen3:1.7b")
+                .baseUrl(eamonGPTConfig.getUrl())
+                .apiKey(eamonGPTConfig.getEamonGPTKey())
+                .modelName("qwen3")
                 .timeout(Duration.ofSeconds(30))
                 .build();
 
@@ -340,6 +348,13 @@ public class LangChainController {
                 .build();
 
         String result = assistant.chat(langchainRagChatDTO.getSpeak());
+
+        if (result.contains("NOT_LOGIN")) {
+            log.error("通义千问token过期!");
+//            eamonGPTConfig.upDateEamonGPTKey();
+            return "通义千问token过期,请再次请求";
+        }
+
         return "【AI回复】:" + result;
     }
 

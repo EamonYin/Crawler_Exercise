@@ -3,7 +3,9 @@ package com.crawler.crawler_exercise.controller;
 import com.crawler.crawler_exercise.config.*;
 import com.crawler.crawler_exercise.entiy.LangchainRagChatDTO;
 import com.crawler.crawler_exercise.service.IMilvusEmbeddingService;
+import com.crawler.crawler_exercise.service.IQwenService;
 import com.crawler.crawler_exercise.service.MyAiAssistant;
+import com.crawler.crawler_exercise.utls.api.QwenAPi;
 import dev.ai4j.openai4j.chat.ResponseFormat;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.request.ChatRequest;
@@ -56,6 +58,8 @@ public class LangChainController {
 
     @Autowired
     IMilvusEmbeddingService milvusEmbeddingService;
+    @Autowired
+    IQwenService qwenService;
 
     @PostMapping("/langchainInfo")
     public void langchainInfo(@RequestBody String speak) {

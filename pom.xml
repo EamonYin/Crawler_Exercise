@@ -106,12 +106,14 @@
             <version>1.18.30</version>
         </dependency>
 
-        <!-- Apache HttpClient -->
+        <!-- Apache HttpClient Start-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
         </dependency>
+
+        <!-- Apache HttpClient End-->
 
         <!-- langchain 开始 -->
         <dependency>

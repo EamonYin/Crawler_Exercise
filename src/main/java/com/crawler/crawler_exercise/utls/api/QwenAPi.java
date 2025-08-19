@@ -5,11 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.alibaba.fastjson2.JSONObject;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -36,7 +31,23 @@ public class QwenAPi {
         post.setEntity(new UrlEncodedFormEntity(params));
 
         try (CloseableHttpResponse response = client.execute(post)) {
-            return EntityUtils.toString(response.getEntity());
+            String responseBody = EntityUtils.toString(response.getEntity());
+
+            try {
+                JSONObject jsonResponse = JSONObject.parseObject(responseBody);
+
+                if (!jsonResponse.getBoolean("hasError") &&
+                        jsonResponse.getJSONObject("content").getBoolean("success")) {
+
+                    return jsonResponse.getJSONObject("content")
+                            .getJSONObject("data")
+                            .getString("smsToken");
+                }
+            } catch (Exception e) {
+                // JSON parsing failed, SMS send unsuccessful
+            }
+
+            return null;
         }
     }
 

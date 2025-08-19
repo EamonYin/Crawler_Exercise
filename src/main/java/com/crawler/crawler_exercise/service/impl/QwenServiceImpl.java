@@ -18,6 +18,7 @@ public class QwenServiceImpl implements IQwenService {
     public String sendSmsCN(String phoneNum) {
         QwenAPi qwenAPi = new QwenAPi();
         try {
+            // 返回 smstoken
             return qwenAPi.sendSms("86", phoneNum, "CN");
         } catch (IOException e) {
             throw new RuntimeException(e);

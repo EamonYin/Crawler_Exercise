@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.entiy;
+package com.crawler.crawler_exercise.entiy.dto;
 
 import lombok.Data;
 

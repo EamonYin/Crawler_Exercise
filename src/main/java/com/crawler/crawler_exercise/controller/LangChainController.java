@@ -1,7 +1,7 @@
 package com.crawler.crawler_exercise.controller;
 
 import com.crawler.crawler_exercise.config.*;
-import com.crawler.crawler_exercise.entiy.LangchainRagChatDTO;
+import com.crawler.crawler_exercise.entiy.dto.LangchainRagChatDTO;
 import com.crawler.crawler_exercise.service.IMilvusEmbeddingService;
 import com.crawler.crawler_exercise.service.IQwenMsgService;
 import com.crawler.crawler_exercise.service.MyAiAssistant;

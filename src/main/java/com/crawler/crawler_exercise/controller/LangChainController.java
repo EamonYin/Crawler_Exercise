@@ -346,8 +346,9 @@ public class LangChainController {
                 .build();
 
         String result = assistant.chat(langchainRagChatDTO.getSpeak());
+        log.info("大模型回复:{}",result);
 
-        if (result.contains("NOT_LOGIN")) {
+        if (result.contains("NOT_LOGIN") || result.contains("FORCE_LOGOUT_TICKET_INVALID")) {
             log.error("通义千问token过期!");
 //            eamonGPTConfig.upDateEamonGPTKey();
             return "通义千问token过期,请再次请求";

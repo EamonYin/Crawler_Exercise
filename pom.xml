@@ -8,13 +8,73 @@
     <name>Crawler_Exercise</name>
     <description>Crawler_Exercise</description>
     <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 基础配置 -->
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-boot.version>2.6.5</spring-boot.version>
+
+        <!-- Spring Boot 版本 -->
+        <spring-boot.version>3.4.2</spring-boot.version>
+
+        <!-- Spring AI 版本 -->
+        <spring-ai.version>1.0.0</spring-ai.version>
+        <spring-ai-openai-starter.version>1.0.0</spring-ai-openai-starter.version>
+
+        <!-- Spring AI Alibaba 版本 -->
+        <spring-ai-alibaba.version>1.0.0.2</spring-ai-alibaba.version>
+
+        <!-- Spring Cloud Alibaba 版本 -->
         <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
+
+        <!-- 依赖版本 -->
+        <mybatis-plus.version>3.5.11</mybatis-plus.version>
+        <mysql.version>8.0.28</mysql.version>
+        <protobuf-java.version>3.25.3</protobuf-java.version>
+        <selenium-java.version>4.21.0</selenium-java.version>
+        <webdrivermanager.version>5.8.0</webdrivermanager.version>
+        <guava.version>31.0.1-jre</guava.version>
+        <selenium-devtools.version>4.2.2</selenium-devtools.version>
+        <lombok.version>1.18.30</lombok.version>
+        <fastjson.version>2.0.57</fastjson.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <langchain4j.version>0.35.0</langchain4j.version>
+        <milvus-sdk-java.version>2.6.0</milvus-sdk-java.version>
+        <javax-annotation.version>1.3.2</javax-annotation.version>
+
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- SpringAI Alibaba bom-->
+            <dependency>
+                <groupId>com.alibaba.cloud.ai</groupId>
+                <artifactId>spring-ai-alibaba-bom</artifactId>
+                <version>${spring-ai-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- SpringAI原生 bom-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.ai</groupId>-->
+<!--                <artifactId>spring-ai-bom</artifactId>-->
+<!--                <version>${spring-ai.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -33,19 +93,39 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- MyBatis Plus Starter (核心依赖) -->
+        <!-- MyBatis Plus 相关依赖 -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.1</version>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+            <version>${mybatis-plus.version}</version>
         </dependency>
 
         <!-- MySQL 驱动 -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
             <scope>runtime</scope>
         </dependency>
+        <!-- 显式对齐 Protobuf 版本，避免旧版导致运行时缺类问题 -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protobuf-java.version}</version>
+        </dependency>
+
 
         <!-- Spring Data Redis 核心依赖（自动包含 Lettuce 客户端） -->
         <dependency>
@@ -57,60 +137,47 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.141.59</version>
+            <version>${selenium-java.version}</version>
+        </dependency>
+
+        <!-- ChromeDriver管理器，自动下载和管理ChromeDriver -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.0.1-jre</version>
+            <version>${guava.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-devtools-v102</artifactId>
-            <version>4.2.2</version>
+            <version>${selenium-devtools.version}</version>
             <scope>test</scope>
         </dependency>
         <!--爬虫 end-->
 
-        <!--日志相关 start-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.28</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.28</version>
-        </dependency>
-        <!--日志相关 end-->
-
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>2.0.57</version>
+            <version>${fastjson.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>${lombok.version}</version>
         </dependency>
 
         <!-- Apache HttpClient Start-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <version>${httpclient.version}</version>
         </dependency>
 
         <!-- Apache HttpClient End-->
@@ -119,32 +186,32 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-easy-rag</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-milvus</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
 
         <!-- 中文分词 start-->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-hugging-face</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
         <!-- 中文分词 end-->
 
@@ -160,7 +227,7 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-web-search-engine-searchapi</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
         <!--大模型联网 end-->
 
@@ -170,45 +237,31 @@
         <dependency>
             <groupId>io.milvus</groupId>
             <artifactId>milvus-sdk-java</artifactId>
-            <version>2.6.0</version>
+            <version>${milvus-sdk-java.version}</version>
         </dependency>
         <!-- 向量数据库 end-->
 
-        <!--        <dependency>-->
-<!--            <groupId>com.baomidou</groupId>-->
-<!--            <artifactId>mybatis-plus-boot-starter</artifactId>-->
-<!--            <version>3.5.12</version>-->
-<!--        </dependency>-->
+        <!-- JDK17 对 javax.annotation.Resource 的支持 -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax-annotation.version}</version>
+        </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>-->
-<!--        </dependency>-->
+        <!-- Spring AI Alibaba dashscope-->
+        <dependency>
+            <groupId>com.alibaba.cloud.ai</groupId>
+            <artifactId>spring-ai-alibaba-starter-dashscope</artifactId>
+        </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+        <groupId>com.alibaba.cloud.ai</groupId>
+        <artifactId>spring-ai-alibaba-starter-memory-jdbc</artifactId>
+        </dependency>
 
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-dependencies</artifactId>
-                    <version>${spring-boot.version}</version>
-                    <type>pom</type>
-                    <scope>import</scope>
-                </dependency>
-<!--                <dependency>-->
-<!--                    <groupId>com.alibaba.cloud</groupId>-->
-<!--                    <artifactId>spring-cloud-alibaba-dependencies</artifactId>-->
-<!--                    <version>${spring-cloud-alibaba.version}</version>-->
-<!--                    <type>pom</type>-->
-<!--                    <scope>import</scope>-->
-<!--                </dependency>-->
-        </dependencies>
-    </dependencyManagement>
+
+
 
     <build>
         <finalName>${project.artifactId}</finalName>

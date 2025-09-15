@@ -45,11 +45,11 @@ public class TOQwen {
         System.out.println("【Iframe content】: " + chromeDriver.getPageSource());
         // 输入手机号
         chromeDriver.manage().timeouts().implicitlyWait(20L, TimeUnit.SECONDS);
-        WebElement phoneNum = chromeDriver.findElementById("fm-sms-login-id");
+        WebElement phoneNum = chromeDriver.findElement(By.id("fm-sms-login-id"));
         chromeDriver.executeScript("arguments[0].value = '15620964916'; arguments[0].dispatchEvent(new Event('input'));", phoneNum);
         System.out.println("【phoneNum TExt】:" + phoneNum.getAttribute("value"));
         // 输入验证码
-        WebElement phoneCode = chromeDriver.findElementById("fm-smscode");
+        WebElement phoneCode = chromeDriver.findElement(By.id("fm-smscode"));
         chromeDriver.executeScript("arguments[0].value = '467558'; arguments[0].dispatchEvent(new Event('input'));", phoneCode);
         System.out.println("【phoneCode TExt】:" + phoneCode.getAttribute("value"));
 

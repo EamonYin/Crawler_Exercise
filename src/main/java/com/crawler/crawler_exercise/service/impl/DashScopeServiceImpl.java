@@ -195,7 +195,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
             // 打印结果
 //            System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(result.getOutput()));
             System.out.println("单"+result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject());
-            return ParsOnlineJsonToText(result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject().get("transcription_url").getAsString());
+            return parsOnlineJsonToText(result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject().get("transcription_url").getAsString());
         } catch (Exception e) {
             System.out.println("error: " + e);
         }
@@ -234,7 +234,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
             // 打印结果
             for (JsonElement results : result.getOutput().get("results").getAsJsonArray()) {
                 System.out.println("录音转文字："+results.getAsJsonObject().get("transcription_url"));
-                ParsOnlineJsonToText(results.getAsJsonObject().get("transcription_url").getAsString());
+                parsOnlineJsonToText(results.getAsJsonObject().get("transcription_url").getAsString());
             }
         } catch (Exception e) {
             System.out.println("error: " + e);
@@ -242,7 +242,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
         return "";
     }
 
-    public String ParsOnlineJsonToText(String url) throws IOException {
+    public String parsOnlineJsonToText(String url) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode root = mapper.readTree(new URL(url));

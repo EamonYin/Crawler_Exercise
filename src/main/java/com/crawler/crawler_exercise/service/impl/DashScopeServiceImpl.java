@@ -8,6 +8,11 @@ import com.alibaba.cloud.ai.dashscope.audio.transcription.AudioTranscriptionMode
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import com.alibaba.dashscope.audio.asr.recognition.Recognition;
 import com.alibaba.dashscope.audio.asr.recognition.RecognitionParam;
+import com.alibaba.dashscope.audio.asr.transcription.Transcription;
+import com.alibaba.dashscope.audio.asr.transcription.TranscriptionParam;
+import com.alibaba.dashscope.audio.asr.transcription.TranscriptionQueryParam;
+import com.alibaba.dashscope.audio.asr.transcription.TranscriptionResult;
+import com.alibaba.dashscope.common.TaskStatus;
 import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -22,6 +27,11 @@ import com.crawler.crawler_exercise.service.IDashScopeService;
 import com.crawler.crawler_exercise.utls.tool.MysqlChatMemory;
 import com.crawler.crawler_exercise.utls.tool.TimeTools;
 import com.crawler.crawler_exercise.utls.tool.TripPlanTools;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.volcengine.tos.TOSV2;
 import com.volcengine.tos.TOSV2ClientBuilder;
 import com.volcengine.tos.TosClientException;
@@ -48,6 +58,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -132,7 +143,8 @@ public class DashScopeServiceImpl implements IDashScopeService {
 
     }
 
-    public String DashScopeVoidToText(String musicStr) throws Exception {
+    @Override
+    public String DashScopeVoiceToText(String musicStr) throws Exception {
 
         // 音频资源
 //        UrlResource audioResource = new UrlResource(AUDIO_RESOURCES_URL);
@@ -185,109 +197,63 @@ public class DashScopeServiceImpl implements IDashScopeService {
         return null;
     }
 
-    private static String uploadToOss(OSS ossClient, InputStream inputStream, long contentLength, String bucketName, String objectName) throws IOException {
-        // 配置文件元数据
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(contentLength);
-        metadata.setContentType("mp3");
-        metadata.setCacheControl("max-age=31536000"); // 缓存1年
-
-        // 构建上传请求
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName,
-                inputStream, metadata);
-
-        // 执行上传
-        ossClient.putObject(putObjectRequest);
-
-        // 返回访问URL
-        return "https://" + bucketName + ".oss-cn-beijing.aliyuncs.com/" + objectName;
-    }
-
-    private static OSS createOssClient() {
-        // 从配置中心或环境变量获取更安全，这里为示例简化
-        String accessKeyId = "";
-        String accessKeySecret = "";
-        String endpoint = "https://oss-cn-beijing.aliyuncs.com";
-        String region = "cn-beijing";
-
-        CredentialsProvider credentialsProvider = new DefaultCredentialProvider(accessKeyId, accessKeySecret);
-        ClientBuilderConfiguration clientConfig = new ClientBuilderConfiguration();
-        clientConfig.setSignatureVersion(SignVersion.V4);
-
-        return OSSClientBuilder.create()
-                .endpoint(endpoint)
-                .credentialsProvider(credentialsProvider)
-                .clientConfiguration(clientConfig)
-                .region(region)
-                .build();
-    }
-
-
-    // 火山引擎
-    public static void main(String[] args) {
-        String endpoint = "tos-cn-beijing.volces.com";
-        String region = "cn-beijing";
-        String accessKey = System.getenv("");
-        String secretKey = System.getenv("==");
-
-        String bucketName = "";
-        String objectKey = "test/hello_world_female2.wav";
-
-        TOSV2 tos = new TOSV2ClientBuilder().build(region, endpoint, accessKey, secretKey);
-
-        try{
-//            String data = "1234567890abcdefghijklmnopqrstuvwxyz~!@#$%^&*()_+<>?,./   :'1234567890abcdefghijklmnopqrstuvwxyz~!@#$%^&*()_+<>?,./   :'";
-//            ByteArrayInputStream stream = new ByteArrayInputStream(data.getBytes());
-            File file = new File("/Downloads/hello_world_female2.wav");
-            InputStream inputStream = new FileInputStream(file);
-            PutObjectInput putObjectInput = new PutObjectInput().setBucket(bucketName).setKey(objectKey).setContent(inputStream);
-            PutObjectOutput output = tos.putObject(putObjectInput);
-            System.out.println("putObject succeed, object's etag is " + output.getEtag());
-            System.out.println("putObject succeed, object's crc64 is " + output.getHashCrc64ecma());
-        } catch (TosClientException e) {
-            // 操作失败，捕获客户端异常，一般情况是请求参数错误，此时请求并未发送
-            System.out.println("putObject failed");
-            System.out.println("Message: " + e.getMessage());
-            if (e.getCause() != null) {
-                e.getCause().printStackTrace();
+    @Override
+    public String DashScopeRecordToText(String musicStr) {
+        // 创建转写请求参数
+        TranscriptionParam param =
+                TranscriptionParam.builder()
+                        // 若没有将API Key配置到环境变量中，需将apiKey替换为自己的API Key
+                        .apiKey(apiKey)
+                        .model("paraformer-v2")
+                        // “language_hints”只支持paraformer-v2模型
+                        .parameter("language_hints", new String[]{"zh", "en"})
+                        .fileUrls(
+                                Arrays.asList(
+                                        "https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav",
+                                        "https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_male2.wav"))
+                        .build();
+        try {
+            Transcription transcription = new Transcription();
+            // 提交转写请求
+            TranscriptionResult result = transcription.asyncCall(param);
+            System.out.println("RequestId: " + result.getRequestId());
+            // 循环获取任务执行结果，直到任务结束
+            while (true) {
+                result = transcription.fetch(TranscriptionQueryParam.FromTranscriptionParam(param, result.getTaskId()));
+                if (result.getTaskStatus() == TaskStatus.SUCCEEDED || result.getTaskStatus() == TaskStatus.FAILED) {
+                    break;
+                }
+                Thread.sleep(1000);
             }
-        } catch (TosServerException e) {
-            // 操作失败，捕获服务端异常，可以获取到从服务端返回的详细错误信息
-            System.out.println("putObject failed");
-            System.out.println("StatusCode: " + e.getStatusCode());
-            System.out.println("Code: " + e.getCode());
-            System.out.println("Message: " + e.getMessage());
-            System.out.println("RequestID: " + e.getRequestID());
-        } catch (Throwable t) {
-            // 作为兜底捕获其他异常，一般不会执行到这里
-            System.out.println("putObject failed");
-            System.out.println("unexpected exception, message: " + t.getMessage());
+            // 打印结果
+            for (JsonElement results : result.getOutput().get("results").getAsJsonArray()) {
+                System.out.println("录音转文字："+results.getAsJsonObject().get("transcription_url"));
+                jsonconver(results.getAsJsonObject().get("transcription_url").getAsString());
+            }
+        } catch (Exception e) {
+            System.out.println("error: " + e);
         }
+        return "";
     }
 
-    //    public static void main(String[] args) throws IOException {
-//        OSS ossClient = createOssClient();
-//
-//        // base64版本
-////        String base64 = "";
-////        if (base64 == null) {
-////            throw new IllegalArgumentException("base64 is null");
-////        }
-////        // 移除 data URI 前缀（如 "data:audio/wav;base64,"）并去除空白
-////        int comma = base64.indexOf(',');
-////        String payload = (comma >= 0) ? base64.substring(comma + 1) : base64;
-////        payload = payload.replaceAll("\\s+", "");
-////        byte[] bytes = Base64.getDecoder().decode(payload);
-////        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-////        uploadToOss(ossClient,byteArrayInputStream,bytes.length,"bucketName","testvoice/voice"+new Date());
-//
-//        //上传文件版
-//        File file = new File("/Downloads/test.mp3");
-//        long contentLength = file.length(); // 获取文件大小（字节）
-//        InputStream inputStream = new FileInputStream(file);
-//        String url = uploadToOss(ossClient, inputStream, contentLength, "bucketName", "testvoice/voice"+new Date()+".mp3");
-//        System.out.println("上传成功，URL: " + url);
-//    }
+    public void jsonconver(String url) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode root = mapper.readTree(new URL(url));
+        JsonNode transcriptsNode = root.path("transcripts");
+        if (transcriptsNode.isArray() && transcriptsNode.size() > 0) {
+            JsonNode first = transcriptsNode.get(0);
+            String text = first.path("text").asText(null); // 若不存在返回 null
+            System.out.println("first text: " + text);
+        } else {
+            System.out.println("transcripts 不存在或为空");
+        }
+
+        // 方法2：读取为通用 Map（也可改为具体 POJO：MyClass.class）
+//        Map<String, Object> map = mapper.readValue(new URL(url), new TypeReference<Map<String, Object>>() {});
+//        System.out.println("=== Map pretty ===");
+//        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map));
+    }
 
 
 }

@@ -11,5 +11,7 @@ public interface IDashScopeService {
 
     void DashScopeVoidRead(String message);
 
-    String DashScopeVoidToText(String musicStr) throws Exception;
+    String DashScopeVoiceToText(String musicStr) throws Exception;
+
+    String DashScopeRecordToText(String musicStr);
 }

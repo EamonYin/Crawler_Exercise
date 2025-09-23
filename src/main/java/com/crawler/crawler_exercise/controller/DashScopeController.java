@@ -35,6 +35,11 @@ public class DashScopeController {
 
     @PostMapping(value = "/chatInVoiceToText")
     public String chatVoiceToText() throws Exception {
-        return dashScopeService.DashScopeVoidToText("https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav");
+        return dashScopeService.DashScopeVoiceToText("https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav");
+    }
+
+    @PostMapping(value = "/recordToText")
+    public void recordToText (){
+        dashScopeService.DashScopeRecordToText("");
     }
 }

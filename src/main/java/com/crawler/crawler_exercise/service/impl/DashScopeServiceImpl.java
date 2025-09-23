@@ -198,6 +198,38 @@ public class DashScopeServiceImpl implements IDashScopeService {
     }
 
     @Override
+    public String DashScopeOnlineVoiceToText(String musicStr) throws Exception {
+        // 创建转写请求参数
+        TranscriptionParam param =
+                TranscriptionParam.builder()
+                        // 若没有将API Key配置到环境变量中，需将apiKey替换为自己的API Key
+                        .apiKey(apiKey)
+                        .model("paraformer-v2")
+                        // “language_hints”只支持paraformer-v2模型
+                        .parameter("language_hints", new String[]{"zh", "en"})
+                        .fileUrls(
+                                Arrays.asList(musicStr))
+                        .build();
+        try {
+            Transcription transcription = new Transcription();
+            // 提交转写请求
+            TranscriptionResult result = transcription.asyncCall(param);
+            System.out.println("RequestId: " + result.getRequestId());
+            // 阻塞等待任务完成并获取结果
+            result = transcription.wait(
+                    TranscriptionQueryParam.FromTranscriptionParam(param, result.getTaskId()));
+            // 打印结果
+//            System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(result.getOutput()));
+            System.out.println("单文件输出："+result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject());
+            return jsonconver(result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject().get("transcription_url").getAsString());
+        } catch (Exception e) {
+            System.out.println("error: " + e);
+        }
+        return null;
+    }
+
+
+    @Override
     public String DashScopeRecordToText(String musicStr) {
         // 创建转写请求参数
         TranscriptionParam param =
@@ -236,14 +268,15 @@ public class DashScopeServiceImpl implements IDashScopeService {
         return "";
     }
 
-    public void jsonconver(String url) throws IOException {
+    public String jsonconver(String url) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode root = mapper.readTree(new URL(url));
         JsonNode transcriptsNode = root.path("transcripts");
+        String text = "";
         if (transcriptsNode.isArray() && transcriptsNode.size() > 0) {
             JsonNode first = transcriptsNode.get(0);
-            String text = first.path("text").asText(null); // 若不存在返回 null
+            text = first.path("text").asText(null); // 若不存在返回 null
             System.out.println("first text: " + text);
         } else {
             System.out.println("transcripts 不存在或为空");
@@ -253,6 +286,8 @@ public class DashScopeServiceImpl implements IDashScopeService {
 //        Map<String, Object> map = mapper.readValue(new URL(url), new TypeReference<Map<String, Object>>() {});
 //        System.out.println("=== Map pretty ===");
 //        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map));
+
+        return text;
     }
 
 

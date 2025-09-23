@@ -13,5 +13,7 @@ public interface IDashScopeService {
 
     String DashScopeVoiceToText(String musicStr) throws Exception;
 
+    String DashScopeOnlineVoiceToText(String musicStr) throws Exception;
+
     String DashScopeRecordToText(String musicStr);
 }

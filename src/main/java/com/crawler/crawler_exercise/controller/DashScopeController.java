@@ -38,6 +38,12 @@ public class DashScopeController {
         return dashScopeService.DashScopeVoiceToText("https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav");
     }
 
+    // OSS录音在线转文字
+    @PostMapping(value = "/DashScopeOnlineVoiceToText")
+    public String DashScopeOnlineVoiceToText() throws Exception {
+        return dashScopeService.DashScopeOnlineVoiceToText("https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav");
+    }
+
     @PostMapping(value = "/recordToText")
     public void recordToText (){
         dashScopeService.DashScopeRecordToText("");

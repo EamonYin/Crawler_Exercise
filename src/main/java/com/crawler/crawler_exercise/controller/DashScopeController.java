@@ -27,25 +27,25 @@ public class DashScopeController {
         return dashScopeService.dashScopeChatByMemoryInStruct(input);
     }
 
-    @PostMapping(value = "/chatInVoice")
-    public void chatInVoice() {
-        dashScopeService.dashScopeVoidRead("你好呀！");
+    @GetMapping(value = "/chatInVoice")
+    public String chatInVoice(@RequestParam("questionStr") String questionStr) {
+        return dashScopeService.dashScopeVoidRead(questionStr);
     }
 
 
-    @PostMapping(value = "/chatInVoiceToText")
-    public String chatVoiceToText() throws Exception {
-        return dashScopeService.dashScopeVoiceToText("https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav");
+    @GetMapping(value = "/chatInVoiceToText")
+    public String chatVoiceToText(@RequestParam("musicUrl") String musicUrl) throws Exception {
+        return dashScopeService.dashScopeVoiceToText(musicUrl);
     }
 
     // OSS录音在线转文字
-    @PostMapping(value = "/DashScopeOnlineVoiceToText")
-    public String DashScopeOnlineVoiceToText() throws Exception {
-        return dashScopeService.dashScopeOnlineVoiceToText("https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav");
+    @GetMapping(value = "/DashScopeOnlineVoiceToText")
+    public String DashScopeOnlineVoiceToText(@RequestParam("musicUrl") String musicUrl) throws Exception {
+        return dashScopeService.dashScopeOnlineVoiceToText(musicUrl);
     }
 
-    @PostMapping(value = "/recordToText")
-    public void recordToText (){
-        dashScopeService.dashScopeRecordToText("");
+    @GetMapping(value = "/recordToText")
+    public void recordToText (@RequestParam("musicUrl") String musicUrl){
+        dashScopeService.dashScopeRecordToText(musicUrl);
     }
 }

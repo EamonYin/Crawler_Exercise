@@ -9,7 +9,7 @@ public interface IDashScopeService {
 
     TripResponse dashScopeChatByMemoryInStruct(DashScopeChatInput input);
 
-    void dashScopeVoidRead(String message);
+    String dashScopeVoidRead(String message);
 
     String dashScopeVoiceToText(String musicStr) throws Exception;
 

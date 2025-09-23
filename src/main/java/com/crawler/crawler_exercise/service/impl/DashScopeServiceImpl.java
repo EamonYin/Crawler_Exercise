@@ -104,7 +104,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
     private SpeechSynthesisModel synthesisModel;
 
     @Override
-    public void dashScopeVoidRead(String text) {
+    public String dashScopeVoidRead(String text) {
         DashScopeAudioSpeechOptions scopeSpeechSynthesisOptions = DashScopeAudioSpeechOptions.builder()
                 .model(model)
                 .voice(voice)
@@ -115,6 +115,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
 
         System.out.println("Base64: " + Base64.getEncoder().encodeToString(array));
 
+        return Base64.getEncoder().encodeToString(array);
     }
 
     @Override

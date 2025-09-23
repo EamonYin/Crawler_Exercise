@@ -1,10 +1,7 @@
 package com.crawler.crawler_exercise.service.impl;
 
-import cn.hutool.core.io.FileUtil;
 import com.alibaba.cloud.ai.dashscope.audio.DashScopeAudioSpeechOptions;
-import com.alibaba.cloud.ai.dashscope.audio.DashScopeAudioTranscriptionOptions;
 import com.alibaba.cloud.ai.dashscope.audio.synthesis.*;
-import com.alibaba.cloud.ai.dashscope.audio.transcription.AudioTranscriptionModel;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import com.alibaba.dashscope.audio.asr.recognition.Recognition;
 import com.alibaba.dashscope.audio.asr.recognition.RecognitionParam;
@@ -13,34 +10,16 @@ import com.alibaba.dashscope.audio.asr.transcription.TranscriptionParam;
 import com.alibaba.dashscope.audio.asr.transcription.TranscriptionQueryParam;
 import com.alibaba.dashscope.audio.asr.transcription.TranscriptionResult;
 import com.alibaba.dashscope.common.TaskStatus;
-import com.aliyun.oss.ClientBuilderConfiguration;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.common.auth.CredentialsProvider;
-import com.aliyun.oss.common.auth.DefaultCredentialProvider;
-import com.aliyun.oss.common.comm.SignVersion;
-import com.aliyun.oss.model.ObjectMetadata;
-import com.aliyun.oss.model.PutObjectRequest;
 import com.crawler.crawler_exercise.entiy.input.DashScopeChatInput;
 import com.crawler.crawler_exercise.entiy.output.Trip.TripResponse;
 import com.crawler.crawler_exercise.service.IDashScopeService;
 import com.crawler.crawler_exercise.utls.tool.MysqlChatMemory;
 import com.crawler.crawler_exercise.utls.tool.TimeTools;
 import com.crawler.crawler_exercise.utls.tool.TripPlanTools;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.volcengine.tos.TOSV2;
-import com.volcengine.tos.TOSV2ClientBuilder;
-import com.volcengine.tos.TosClientException;
-import com.volcengine.tos.TosServerException;
-import com.volcengine.tos.model.object.PutObjectInput;
-import com.volcengine.tos.model.object.PutObjectOutput;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
-import org.springframework.ai.audio.transcription.AudioTranscriptionResponse;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
@@ -50,15 +29,10 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileUrlResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -91,7 +65,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
     }
 
     @Override
-    public Flux<String> DashScopeChatByMemory(DashScopeChatInput input) {
+    public Flux<String> dashScopeChatByMemory(DashScopeChatInput input) {
         UserMessage user = UserMessage.builder()
                 .text(input.getQuestion())
                 .metadata(Map.of("type", input.getType()))
@@ -109,7 +83,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
     }
 
     @Override
-    public TripResponse DashScopeChatByMemoryInStruct(DashScopeChatInput input) {
+    public TripResponse dashScopeChatByMemoryInStruct(DashScopeChatInput input) {
         UserMessage user = UserMessage.builder()
                 .text(input.getQuestion())
                 .metadata(Map.of("type", input.getType()))
@@ -130,7 +104,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
     private SpeechSynthesisModel synthesisModel;
 
     @Override
-    public void DashScopeVoidRead(String text) {
+    public void dashScopeVoidRead(String text) {
         DashScopeAudioSpeechOptions scopeSpeechSynthesisOptions = DashScopeAudioSpeechOptions.builder()
                 .model(model)
                 .voice(voice)
@@ -144,7 +118,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
     }
 
     @Override
-    public String DashScopeVoiceToText(String musicStr) throws Exception {
+    public String dashScopeVoiceToText(String musicStr) throws Exception {
 
         // 音频资源
 //        UrlResource audioResource = new UrlResource(AUDIO_RESOURCES_URL);
@@ -198,7 +172,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
     }
 
     @Override
-    public String DashScopeOnlineVoiceToText(String musicStr) throws Exception {
+    public String dashScopeOnlineVoiceToText(String musicStr) throws Exception {
         // 创建转写请求参数
         TranscriptionParam param =
                 TranscriptionParam.builder()
@@ -220,8 +194,8 @@ public class DashScopeServiceImpl implements IDashScopeService {
                     TranscriptionQueryParam.FromTranscriptionParam(param, result.getTaskId()));
             // 打印结果
 //            System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(result.getOutput()));
-            System.out.println("单文件输出："+result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject());
-            return jsonconver(result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject().get("transcription_url").getAsString());
+            System.out.println("单"+result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject());
+            return ParsOnlineJsonToText(result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject().get("transcription_url").getAsString());
         } catch (Exception e) {
             System.out.println("error: " + e);
         }
@@ -230,7 +204,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
 
 
     @Override
-    public String DashScopeRecordToText(String musicStr) {
+    public String dashScopeRecordToText(String musicStr) {
         // 创建转写请求参数
         TranscriptionParam param =
                 TranscriptionParam.builder()
@@ -260,7 +234,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
             // 打印结果
             for (JsonElement results : result.getOutput().get("results").getAsJsonArray()) {
                 System.out.println("录音转文字："+results.getAsJsonObject().get("transcription_url"));
-                jsonconver(results.getAsJsonObject().get("transcription_url").getAsString());
+                ParsOnlineJsonToText(results.getAsJsonObject().get("transcription_url").getAsString());
             }
         } catch (Exception e) {
             System.out.println("error: " + e);
@@ -268,7 +242,7 @@ public class DashScopeServiceImpl implements IDashScopeService {
         return "";
     }
 
-    public String jsonconver(String url) throws IOException {
+    public String ParsOnlineJsonToText(String url) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode root = mapper.readTree(new URL(url));

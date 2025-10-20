@@ -190,12 +190,16 @@ public class DashScopeServiceImpl implements IDashScopeService {
             // 提交转写请求
             TranscriptionResult result = transcription.asyncCall(param);
             System.out.println("RequestId: " + result.getRequestId());
+            Date startTime = new Date();
             // 阻塞等待任务完成并获取结果
             result = transcription.wait(
                     TranscriptionQueryParam.FromTranscriptionParam(param, result.getTaskId()));
             // 打印结果
 //            System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(result.getOutput()));
-            System.out.println("单"+result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject());
+            System.out.println("单语音输出："+result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject());
+            Date endTime = new Date();
+            long diffMsDate = endTime.getTime() - startTime.getTime();
+            System.out.println("Date 差: " + diffMsDate + " ms");
             return parsOnlineJsonToText(result.getOutput().get("results").getAsJsonArray().get(0).getAsJsonObject().get("transcription_url").getAsString());
         } catch (Exception e) {
             System.out.println("error: " + e);

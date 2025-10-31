@@ -14,13 +14,15 @@ import dev.langchain4j.web.search.WebSearchEngine;
 import dev.langchain4j.web.search.WebSearchResults;
 import dev.langchain4j.web.search.searchapi.SearchApiWebSearchEngine;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Date;
+import java.util.*;
 
 // HTTP 客户端相关导入
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -315,20 +317,26 @@ public class LangChainController {
         String webSearchResults = searchWithSearXNG(langchainRagChatDTO.getSpeak());
         log.info("【SearXNG搜索结果】:{}", webSearchResults);
 
+        Boolean enableThinking = false;
+        //自定义参数
+        HashMap<String, String> objectObjectHashMap = new HashMap<>();
+        objectObjectHashMap.put("enable_thinking", "false");
+
         // "/v1" is a must for the OpenAI API!
+        OpenAiChatModel model = OpenAiChatModel.builder()
+                .baseUrl("http://localhost:11434/v1")
+                .apiKey("ollama")
+                .modelName("deepseek-r1")
+                .customHeaders(objectObjectHashMap)
+//                .timeout(Duration.ofSeconds(30))
+                .build();
+
 //        OpenAiChatModel model = OpenAiChatModel.builder()
-//                .baseUrl("http://localhost:11434/v1")
-//                .apiKey("ollama")
-//                .modelName("qwen3:1.7b")
+//                .baseUrl(eamonGPTConfig.getUrl())
+//                .apiKey(eamonGPTConfig.getEamonGPTKey())
+//                .modelName("qwen3")
 //                .timeout(Duration.ofSeconds(30))
 //                .build();
-
-        OpenAiChatModel model = OpenAiChatModel.builder()
-                .baseUrl(eamonGPTConfig.getUrl())
-                .apiKey(eamonGPTConfig.getEamonGPTKey())
-                .modelName("qwen3")
-                .timeout(Duration.ofSeconds(30))
-                .build();
 
         // 3. 构建包含RAG内容和网络搜索结果的系统提示
         String systemPrompt = "The current time is China Standard Time:" + now +

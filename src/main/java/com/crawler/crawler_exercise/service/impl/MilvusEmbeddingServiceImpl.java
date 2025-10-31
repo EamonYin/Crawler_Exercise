@@ -39,7 +39,7 @@ public class MilvusEmbeddingServiceImpl implements IMilvusEmbeddingService {
         embeddingStore.add(embedding2, segment2);
 
         EmbeddingModel zhEmbeddingModel = milvusConfig.getZhEmbeddingModel();
-        TextSegment zhSegment1 = TextSegment.from("今天是个大雪纷飞的天气。");
+        TextSegment zhSegment1 = TextSegment.from("进阶的小名是一个Java爱好者，他的博客是https://eamonyin.blog.csdn.net/");
         Embedding zhEmbedding1 = zhEmbeddingModel.embed(zhSegment1).content();
         embeddingStore.add(zhEmbedding1, zhSegment1);
 

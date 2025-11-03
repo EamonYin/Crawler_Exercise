@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -21,7 +22,10 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.*;
 
 /**
@@ -187,6 +191,32 @@ public class RedisMysqlDataConsistencyTest {
             e.printStackTrace();
         }
         executor.shutdown();
+    }
+
+    @Test
+    void testRedisCounter(){
+
+        String LIKE_RANK_KEY = "rank:article";
+        record article(Integer userId,String name,String content){}
+        article article1 = new article(1,"张三","这里是张三写的一篇水文，不知道有没有人看");
+        article article2= new article(2,"Tianc","我是Tianc，我什么都会，尽管问我");
+        article article3 = new article(3,"Eamon","哈哈哈哈哈哈，哈哈哈哈哈哈");
+
+//        redisTemplate.opsForZSet().incrementScore(LIKE_RANK_KEY, String.valueOf(article1), 3);
+        redisTemplate.opsForZSet().incrementScore(LIKE_RANK_KEY, String.valueOf(article2), 2);
+//        redisTemplate.opsForZSet().incrementScore(LIKE_RANK_KEY, String.valueOf(article3), 1);
+
+        Set<ZSetOperations.TypedTuple<String>> typedTuples = redisTemplate.opsForZSet().reverseRangeWithScores(LIKE_RANK_KEY, 0, 3 - 1);
+        for (ZSetOperations.TypedTuple<String> tuple : typedTuples) {
+            System.out.println("Value: " + tuple.getValue() + ", Score: " + tuple.getScore());
+        }
+    }
+
+
+    public class article{
+        private Integer userId;
+        private String name;
+        private String content;
     }
 
 }

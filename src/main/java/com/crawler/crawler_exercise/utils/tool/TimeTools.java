@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utls.tool;
+package com.crawler.crawler_exercise.utils.tool;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;

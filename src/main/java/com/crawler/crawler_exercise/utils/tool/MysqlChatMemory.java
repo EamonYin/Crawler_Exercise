@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utls.tool;
+package com.crawler.crawler_exercise.utils.tool;
 
 import com.crawler.crawler_exercise.entiy.ChatMessage;
 import com.crawler.crawler_exercise.entiy.enums.MessageType;

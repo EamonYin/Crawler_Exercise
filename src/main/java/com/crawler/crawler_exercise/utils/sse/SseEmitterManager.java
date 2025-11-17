@@ -60,6 +60,7 @@ public class SseEmitterManager {
             if (!wrapper.subscribe(eventName)) {
                 continue;
             }
+            // 构建单个 SSE 事件格式的工具，用来设置 data、event、id、retry 等字段，然后序列化成符合 SSE 协议的行（如 event: xxx\ndata: ...\n\n），再通过长连接推送出去。
             SseEmitter.SseEventBuilder builder = SseEmitter.event()
                     .id(id)
                     .name(eventName)

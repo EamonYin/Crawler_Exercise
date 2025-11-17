@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utls.api;
+package com.crawler.crawler_exercise.utils.api;
 
 import java.io.IOException;
 import java.util.Arrays;

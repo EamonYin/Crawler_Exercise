@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utls.crawler;
+package com.crawler.crawler_exercise.utils.crawler;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;

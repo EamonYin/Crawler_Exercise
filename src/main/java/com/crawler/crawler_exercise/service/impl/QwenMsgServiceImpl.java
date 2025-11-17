@@ -1,14 +1,13 @@
 package com.crawler.crawler_exercise.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.crawler.crawler_exercise.config.EamonGPTConfig;
 import com.crawler.crawler_exercise.entiy.QwenMsg;
 import com.crawler.crawler_exercise.mapper.QwenMsgMapper;
 import com.crawler.crawler_exercise.service.IQwenMsgService;
-import com.crawler.crawler_exercise.utls.api.QwenAPi;
+import com.crawler.crawler_exercise.utils.api.QwenAPi;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

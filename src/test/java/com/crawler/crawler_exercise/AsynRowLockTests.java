@@ -1,5 +1,6 @@
 package com.crawler.crawler_exercise;
 
+import com.alibaba.fastjson2.JSON;
 import com.crawler.crawler_exercise.entiy.CrawlerInfo;
 import com.crawler.crawler_exercise.service.ICrawlerInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -8,10 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.*;
+import java.util.random.RandomGenerator;
 
 /**
  * 并发情况下，mysql的行锁测试
@@ -165,6 +167,57 @@ public class AsynRowLockTests {
 
         long endTime = System.currentTimeMillis();
         System.out.println("高并发插入完成，总耗时: " + (endTime - startTime) + "ms");
+    }
+
+    @Test
+    void futureTest() throws ExecutionException, InterruptedException {
+        List<CompletableFuture<String>> asyncTasks = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            CompletableFuture<String> voidCompletableFuture = CompletableFuture.supplyAsync(() -> {
+                System.out.println("里面线程：" + Thread.currentThread().getName());
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                return "线程：" + Thread.currentThread().getName();
+            });
+            asyncTasks.add(voidCompletableFuture);
+        }
+        for (CompletableFuture<String> completableFuture:asyncTasks){
+            System.out.println(JSON.toJSONString(completableFuture.get()));
+        }
+    }
+
+    @Test
+    void virtualThreadTest() throws ExecutionException, InterruptedException {
+        ArrayList<Future<String>> threads = new ArrayList<>();
+
+        ThreadFactory factory = Thread.ofVirtual()
+                .name("didispace-virtual-thread").factory();
+
+        for (int i = 0 ; i<10;i++){
+            factory.newThread(() -> {
+                System.out.println("线程：" + Thread.currentThread().getName());
+            }).start();
+        }
+
+//        try (ExecutorService myExecutor = Executors.newVirtualThreadPerTaskExecutor()) {
+//            for (int i = 0; i < 10; i++) {
+//                Future<String> future = myExecutor.submit(() -> {
+//                    System.out.println("线程：" + Thread.currentThread().getName());
+//                    return "线程：" + Thread.currentThread().getName();
+//                });
+////                Thread.ofVirtual()
+////                        .name("didispace-virtual-thread")
+////                        .start(runnable);
+//                threads.add(future);
+//            }
+
+//            for (Future<String> future : threads) {
+//                log.info("线程：{}", future.get());
+//            }
+//        }
     }
 
 }

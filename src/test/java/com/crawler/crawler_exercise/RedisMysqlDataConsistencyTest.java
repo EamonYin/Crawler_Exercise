@@ -294,6 +294,7 @@ public class RedisMysqlDataConsistencyTest {
 
     @Test
     public void rank(){
+        redisTemplate.opsForZSet().add("ranking", "2", 100);
     }
 
 }

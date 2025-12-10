@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +38,13 @@ public class RedisRankingsController {
             redisTemplate.opsForSet().add(relationKey, String.valueOf(rUid));
             redisTemplate.expire(relationKey, 10, TimeUnit.MINUTES);
         }
-        redisTemplate.opsForZSet().incrementScore(RANKING_KEY, String.valueOf(rUid), 1);
         List<RankUserInfo> rank = this.getRank();
+        // 开启虚拟线程
+        Thread.startVirtualThread(() -> {
+            // todo:插入数据库，用于redis重启补偿
+            System.out.println("现在时间"+ LocalDate.now()+"--"+rank);
+        });
+        redisTemplate.opsForZSet().incrementScore(RANKING_KEY, String.valueOf(rUid), 1);
         sseEmitterManager.sendMessage("1", JSON.toJSONString(rank), "rank");
         return "点赞成功";
     }

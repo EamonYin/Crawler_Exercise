@@ -27,11 +27,11 @@ public class RedisRankingsController {
     private SseEmitterManager sseEmitterManager;
 
     private final static String RANKING_KEY = "ranking";
-    private final static String RELATION = "relation";
+    private final static String RELATION = "relation:";
 
     @GetMapping("/addScore/{uid}/for/{rUid}")
     public String addScore(@PathVariable("uid") Long uid, @PathVariable("rUid") Long rUid) throws Exception {
-        String relationKey = RELATION + uid + rUid;
+        String relationKey = RELATION + uid +"-"+ rUid;
         if(redisTemplate.hasKey(relationKey)){
             return "已经点赞过了";
         }else {

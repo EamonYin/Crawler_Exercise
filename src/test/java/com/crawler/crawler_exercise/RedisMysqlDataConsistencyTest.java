@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.connection.BitFieldSubCommands;
 import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -289,6 +290,10 @@ public class RedisMysqlDataConsistencyTest {
 
     private int getDayOffset() {
         return LocalDate.now().getDayOfMonth() - 1;
+    }
+
+    @Test
+    public void rank(){
     }
 
 }

@@ -33,7 +33,15 @@ public class RedisStreamToMQController {
         message.put("event", "CREATE");
         message.put("time", String.valueOf(System.currentTimeMillis()));
         message.put("source", "demo");
-
+        /**
+         * 注意⚠️：要用streamKey区分业务。
+         * Redis Stream 的“消费者组”是消费侧概念，生产者只能 XADD 到 stream，并不能“直接发送到某个组”
+         * 
+         * 消费者组的概念，2025-12-27理解：
+         * 消费者组是一种逻辑概念，用于将多个消费者实例组合在一起，形成一个消费组。
+         * 每个消费者实例都属于一个消费组，并且可以消费同一个流中的消息。
+         * 消费者组的主要目的是实现消息的负载均衡和故障恢复。
+         */
         redisMQProducer.send("demo:stream", message);
         return "发送成功";
     }

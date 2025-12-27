@@ -30,18 +30,26 @@ public class AnnotationStreamContainerConfig {
 
     private static final Logger log = LoggerFactory.getLogger(AnnotationStreamContainerConfig.class);
 
+    /**
+     * 让 StreamMessageListenerContainer 成为 Spring 管理的单例组件，其他地方可直接注入使用。
+     * Spring 会在启动时执行这个方法，自动完成容器的创建和启动逻辑（你在方法里 container.start()）。
+     * 结合 @Configuration 和 @ConditionalOnProperty，只在满足配置条件时才创建这个监听容器。
+     * 简单说：@Bean 把“手动 new 的容器”变成“Spring 管理的容器”，便于统一配置、自动装配和生命周期控制。
+     */
     @Bean
     public StreamMessageListenerContainer<String, MapRecord<String, String, String>> annotationStreamContainer(
             RedisConnectionFactory redisConnectionFactory,
             StringRedisTemplate stringRedisTemplate,
             ApplicationContext applicationContext) {
 
+        // 1️⃣ 创建最简单的配置（几乎不配）
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions
                         .builder()
-                        .pollTimeout(Duration.ofSeconds(1))
+                        .pollTimeout(Duration.ofSeconds(1)) // Redis Stream 阻塞拉取超时（XREADGROUP BLOCK）
                         .build();
 
+        // 2️⃣ 创建 Container
         StreamMessageListenerContainer<String, MapRecord<String, String, String>> container =
                 StreamMessageListenerContainer.create(redisConnectionFactory, options);
 
@@ -65,12 +73,13 @@ public class AnnotationStreamContainerConfig {
 
             // 4) 注册监听：消费后执行业务，再决定是否 ACK
             container.receive(
-                    Consumer.from(subscription.group(), subscription.consumer()),
-                    StreamOffset.create(subscription.streamKey(), ReadOffset.lastConsumed()),
+                    Consumer.from(subscription.group(), subscription.consumer()), // 指定消费者组 + 消费者名
+                    StreamOffset.create(subscription.streamKey(), ReadOffset.lastConsumed()), // 只拉取新消息（">"）
                     message -> {
                         // 先执行业务逻辑，再决定是否 ACK
                         listener.onMessage(message);
                         if (subscription.autoAck()) {
+                            // ACK 确认：从 Pending 列表移除
                             stringRedisTemplate.opsForStream().acknowledge(
                                     subscription.streamKey(),
                                     subscription.group(),

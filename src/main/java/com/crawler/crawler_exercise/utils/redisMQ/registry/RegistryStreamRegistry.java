@@ -40,7 +40,7 @@ public class RegistryStreamRegistry {
             RegistryStreamDefinition definition = definitionsByStreamKey.get(handler.streamKey());
             if (definition == null) {
                 // handler 没有对应的配置，直接跳过
-                log.warn("No stream definition found for handler streamKey={}", handler.streamKey());
+                log.warn("未找到处理器对应的 Stream 定义：streamKey={}", handler.streamKey());
                 continue;
             }
             bindings.add(new RegistryStreamBinding(definition, handler));

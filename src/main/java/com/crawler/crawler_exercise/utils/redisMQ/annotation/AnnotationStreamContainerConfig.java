@@ -79,7 +79,7 @@ public class AnnotationStreamContainerConfig {
 
         // 手动启动 container
         container.start();
-        log.info("Annotation stream container started with listeners={}", beans.size());
+        log.info("注解模式的 Stream 监听容器已启动，监听器数量={}", beans.size());
 
         return container;
     }
@@ -93,7 +93,7 @@ public class AnnotationStreamContainerConfig {
             );
         } catch (Exception ex) {
             // 正常情况：组已存在或流还未创建
-            log.debug("Stream group exists or cannot be created: streamKey={}, group={}", streamKey, group);
+            log.debug("Stream 消费组已存在或无法创建：streamKey={}, group={}", streamKey, group);
         }
     }
 }

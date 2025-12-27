@@ -66,7 +66,7 @@ public class RegistryStreamContainerConfig {
 
         // 手动启动 container
         container.start();
-        log.info("Registry stream container started with bindings={}", bindings.size());
+        log.info("注册表模式的 Stream 监听容器已启动，绑定数量={}", bindings.size());
 
         return container;
     }
@@ -80,7 +80,7 @@ public class RegistryStreamContainerConfig {
             );
         } catch (Exception ex) {
             // 正常情况：组已存在或流还未创建
-            log.debug("Stream group exists or cannot be created: streamKey={}, group={}", streamKey, group);
+            log.debug("Stream 消费组已存在或无法创建：streamKey={}, group={}", streamKey, group);
         }
     }
 }

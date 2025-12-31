@@ -1,5 +1,6 @@
 package com.crawler.crawler_exercise.controller.redis;
 
+import com.crawler.crawler_exercise.utils.redisMQ.annotaion2.Annotation2StreamProducer;
 import com.crawler.crawler_exercise.utils.redisMQ.oldDemo.RedisMQSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,8 @@ public class RedisStreamToMQController {
     @Autowired
     private RedisMQSender redisMQProducer;
 
+    @Autowired
+    private Annotation2StreamProducer annotation2StreamProducer;
 
     /**
      * 效果说明：
@@ -44,6 +47,24 @@ public class RedisStreamToMQController {
          */
         redisMQProducer.send("demo:stream", message);
         return "发送成功";
+    }
+
+    @GetMapping("/sendV2")
+    public String sendMessageV2() {
+        Map<String, String> message = new HashMap<>();
+        message.put("orderId", "123");
+        message.put("event", "CREATE");
+        message.put("bizType", "DB_UPDATE");
+        message.put("time", String.valueOf(System.currentTimeMillis()));
+        message.put("source", "DB");
+        annotation2StreamProducer.send("demo:stream:db", message);
+        message.put("orderId", "456");
+        message.put("event", "CREATE");
+        message.put("bizType", "REDIS_UPDATE");
+        message.put("time", String.valueOf(System.currentTimeMillis()));
+        message.put("source", "REDIS");
+        annotation2StreamProducer.send("demo:stream:redis", message);
+        return "发送成功V2";
     }
 
 }

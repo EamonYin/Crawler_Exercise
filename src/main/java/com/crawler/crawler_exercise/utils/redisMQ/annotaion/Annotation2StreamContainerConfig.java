@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utils.redisMQ.annotaion2;
+package com.crawler.crawler_exercise.utils.redisMQ.annotaion;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

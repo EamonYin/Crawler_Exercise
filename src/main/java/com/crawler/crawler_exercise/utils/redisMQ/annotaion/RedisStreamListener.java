@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utils.redisMQ.annotaion2;
+package com.crawler.crawler_exercise.utils.redisMQ.annotaion;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

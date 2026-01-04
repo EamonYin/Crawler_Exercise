@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utils.redisMQ.annotaion2;
+package com.crawler.crawler_exercise.utils.redisMQ.annotaion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;

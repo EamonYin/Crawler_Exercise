@@ -1,7 +1,7 @@
 package com.crawler.crawler_exercise.controller.redis;
 
 import com.crawler.crawler_exercise.utils.redisMQ.MyRedisMQDemo.Producer;
-import com.crawler.crawler_exercise.utils.redisMQ.annotaion2.Annotation2StreamProducer;
+import com.crawler.crawler_exercise.utils.redisMQ.annotaion.Annotation2StreamProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

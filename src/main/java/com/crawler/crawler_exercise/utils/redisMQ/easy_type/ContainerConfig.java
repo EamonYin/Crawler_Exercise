@@ -70,6 +70,7 @@ public class ContainerConfig {
     }
 
     /**
+     * 2026-01-05: 加了也没用！
      * @PostConstruct 是SpringBoot启动时创建容器
      * @PreDestroy 是SpringBoot结束关闭容器
      */

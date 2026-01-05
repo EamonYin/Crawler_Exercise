@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
-@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "annotain", matchIfMissing = true)
+@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "annotain", matchIfMissing = true) //用于切换 annotain / spi / easy 三种redis实现
 public class RedisStreamListenerRegistrar implements SmartInitializingSingleton, ApplicationContextAware {
 
     private ApplicationContext applicationContext;

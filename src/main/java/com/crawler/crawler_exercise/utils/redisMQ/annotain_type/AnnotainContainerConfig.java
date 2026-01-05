@@ -12,7 +12,7 @@ import org.springframework.util.ErrorHandler;
 import java.time.Duration;
 
 @Configuration
-@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "annotain", matchIfMissing = true)
+@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "annotain", matchIfMissing = true) //用于切换 annotain / spi / easy 三种redis实现
 public class AnnotainContainerConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")

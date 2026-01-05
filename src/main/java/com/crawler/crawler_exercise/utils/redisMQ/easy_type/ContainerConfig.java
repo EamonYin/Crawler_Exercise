@@ -16,7 +16,7 @@ import org.springframework.util.ErrorHandler;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "easy")
+@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "easy") //用于切换 annotain / spi / easy 三种redis实现
 public class ContainerConfig {
     @Autowired
     private StringRedisTemplate redisTemplate;

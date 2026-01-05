@@ -19,7 +19,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "spi")
+@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "spi") //用于切换 annotain / spi / easy 三种redis实现
 public class SPI_ContainerConfig {
     @Autowired
     private StringRedisTemplate redisTemplate;

@@ -1,5 +1,6 @@
 package com.crawler.crawler_exercise.utils.redisMQ.annotain_type;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -10,6 +11,7 @@ import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import java.time.Duration;
 
 @Configuration
+@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "annotain", matchIfMissing = true)
 public class AnnotainContainerConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")

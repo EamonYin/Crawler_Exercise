@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.connection.stream.Consumer;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "easy")
 public class ContainerConfig {
     @Autowired
     private StringRedisTemplate redisTemplate;

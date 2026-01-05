@@ -3,6 +3,7 @@ package com.crawler.crawler_exercise.utils.redisMQ.annotain_type;
 import com.alibaba.dashscope.utils.JsonUtils;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
+@ConditionalOnProperty(name = "redis.mq.mode", havingValue = "annotain", matchIfMissing = true)
 public class RedisStreamListenerRegistrar implements SmartInitializingSingleton, ApplicationContextAware {
 
     private ApplicationContext applicationContext;

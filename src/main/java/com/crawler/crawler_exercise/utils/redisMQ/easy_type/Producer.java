@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utils.redisMQ.MyRedisMQDemo;
+package com.crawler.crawler_exercise.utils.redisMQ.easy_type;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

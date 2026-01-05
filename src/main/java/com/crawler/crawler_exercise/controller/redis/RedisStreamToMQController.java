@@ -1,6 +1,7 @@
 package com.crawler.crawler_exercise.controller.redis;
 
-import com.crawler.crawler_exercise.utils.redisMQ.MyRedisMQDemo.Producer;
+import com.crawler.crawler_exercise.utils.redisMQ.easy_type.Producer;
+import com.crawler.crawler_exercise.utils.redisMQ.spi_type.ProducerV2;
 import com.crawler.crawler_exercise.utils.redisMQ.annotaion.Annotation2StreamProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,9 @@ public class RedisStreamToMQController {
 
     @Autowired
     private Producer producer;
+
+    @Autowired
+    private ProducerV2 producerV2;
 
 //    /**
 //     * 效果说明：
@@ -73,6 +77,12 @@ public class RedisStreamToMQController {
     @GetMapping("/sendV3")
     public void sendMessageV3(){
         producer.send("自己的demo");
+    }
+
+    @GetMapping("/sendV4")
+    public void sendMessageV4(){
+        producerV2.send("order-stream","下订单了！");
+        producerV2.send("trade-stream","付款了！");
     }
 
 }

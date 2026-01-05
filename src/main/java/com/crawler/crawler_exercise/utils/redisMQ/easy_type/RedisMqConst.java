@@ -1,4 +1,4 @@
-package com.crawler.crawler_exercise.utils.redisMQ.MyRedisMQDemo;
+package com.crawler.crawler_exercise.utils.redisMQ.easy_type;
 
 public class RedisMqConst {
     // 队列名字（Stream key）

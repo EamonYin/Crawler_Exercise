@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 @Component
 @Slf4j
-public class ProducerV2 {
+public class SPI_Producer {
     @Autowired
     private StringRedisTemplate redisTemplate;
 

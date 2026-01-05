@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class ConsumerListenerV2 implements StreamListener<String, MapRecord<String,String,String>> {
+public class SPI_ConsumerListener implements StreamListener<String, MapRecord<String,String,String>> {
 
     @Autowired
     StringRedisTemplate redisTemplate;

@@ -2,6 +2,7 @@ package com.crawler.crawler_exercise.utils.redisMQ.spi_type;
 
 import com.crawler.crawler_exercise.utils.redisMQ.easy_type.ConsumerListener;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.stream.Consumer;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class ContainerConfigV2 {
+public class SPI_ContainerConfig {
     @Autowired
     private StringRedisTemplate redisTemplate;
     @Autowired
@@ -25,11 +26,13 @@ public class ContainerConfigV2 {
     @Autowired
     private List<RedisConsumerRegistrar> registrars;
 
+    private StreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
+
     @PostConstruct
     public void init(){
 
         // 2. 启动监听容器
-        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container = StreamMessageListenerContainer
+        container = StreamMessageListenerContainer
                 .create(redisTemplate.getConnectionFactory(),
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions
                         .builder()
@@ -49,5 +52,16 @@ public class ContainerConfigV2 {
         }
 
         container.start();
+    }
+
+    /**
+     * @PostConstruct 是SpringBoot启动时创建容器
+     * @PreDestroy 是SpringBoot结束关闭容器
+     */
+    @PreDestroy
+    public void shutdown() {
+        if (container != null) {
+            container.stop();
+        }
     }
 }

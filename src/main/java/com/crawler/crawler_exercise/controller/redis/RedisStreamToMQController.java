@@ -1,15 +1,14 @@
 package com.crawler.crawler_exercise.controller.redis;
 
+import com.alibaba.fastjson.JSON;
+import com.crawler.crawler_exercise.entiy.dto.RedisMQPayDTO;
+import com.crawler.crawler_exercise.utils.redisMQ.annotain_type.AnnotainProducer;
 import com.crawler.crawler_exercise.utils.redisMQ.easy_type.Producer;
-import com.crawler.crawler_exercise.utils.redisMQ.spi_type.ProducerV2;
-import com.crawler.crawler_exercise.utils.redisMQ.annotaion.Annotation2StreamProducer;
+import com.crawler.crawler_exercise.utils.redisMQ.spi_type.SPI_Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/redis/stream")
@@ -19,13 +18,13 @@ public class RedisStreamToMQController {
 //    private RedisMQSender redisMQProducer;
 
     @Autowired
-    private Annotation2StreamProducer annotation2StreamProducer;
-
-    @Autowired
     private Producer producer;
 
     @Autowired
-    private ProducerV2 producerV2;
+    private SPI_Producer SPIProducer;
+
+    @Autowired
+    private AnnotainProducer annotainProducer;
 
 //    /**
 //     * 效果说明：
@@ -56,24 +55,6 @@ public class RedisStreamToMQController {
 //        return "发送成功";
 //    }
 
-    @GetMapping("/sendV2")
-    public String sendMessageV2() {
-        Map<String, String> message = new HashMap<>();
-        message.put("orderId", "123");
-        message.put("event", "CREATE");
-        message.put("bizType", "DB_UPDATE");
-        message.put("time", String.valueOf(System.currentTimeMillis()));
-        message.put("source", "DB");
-        annotation2StreamProducer.send("demo:stream:db", message);
-        message.put("orderId", "456");
-        message.put("event", "CREATE");
-        message.put("bizType", "REDIS_UPDATE");
-        message.put("time", String.valueOf(System.currentTimeMillis()));
-        message.put("source", "REDIS");
-        annotation2StreamProducer.send("demo:stream:redis", message);
-        return "发送成功V2";
-    }
-
     @GetMapping("/sendV3")
     public void sendMessageV3(){
         producer.send("自己的demo");
@@ -81,8 +62,17 @@ public class RedisStreamToMQController {
 
     @GetMapping("/sendV4")
     public void sendMessageV4(){
-        producerV2.send("order-stream","下订单了！");
-        producerV2.send("trade-stream","付款了！");
+        SPIProducer.send("order-stream","下订单了！");
+        SPIProducer.send("trade-stream","付款了！");
+    }
+
+    @GetMapping("/sendV5")
+    public void sendMessageV5(){
+        annotainProducer.send("demo:mq:redis:order","orderId=1");
+        RedisMQPayDTO redisMQPayDTO = new RedisMQPayDTO();
+        redisMQPayDTO.setId(1);
+        redisMQPayDTO.setPayOrderId("order-1");
+        annotainProducer.send("demo:mq:redis:pay", JSON.toJSONString(redisMQPayDTO));
     }
 
 }

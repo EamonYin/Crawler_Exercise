@@ -1,6 +1,7 @@
 package com.crawler.crawler_exercise.utils.redisMQ.easy_type;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.stream.Consumer;
@@ -18,6 +19,8 @@ public class ContainerConfig {
     private StringRedisTemplate redisTemplate;
     @Autowired
     private ConsumerListener consumerListener;
+
+    private StreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
 
     /**
      * @PostConstruct注解解析
@@ -41,7 +44,11 @@ public class ContainerConfig {
             redisTemplate.opsForStream().createGroup(RedisMqConst.STREAM_KEY, RedisMqConst.GROUP);
         }catch (Exception e){}
         // 2. 启动监听容器
-        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container = StreamMessageListenerContainer.create(redisTemplate.getConnectionFactory(), StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder().build());
+        container = StreamMessageListenerContainer.create(redisTemplate.getConnectionFactory(),
+                StreamMessageListenerContainer
+                        .StreamMessageListenerContainerOptions
+                        .builder()
+                        .build());
 
         /**
          * 【XREADGROUP 监听 / 读取消息命令】
@@ -60,5 +67,16 @@ public class ContainerConfig {
                 consumerListener);
 
         container.start();
+    }
+
+    /**
+     * @PostConstruct 是SpringBoot启动时创建容器
+     * @PreDestroy 是SpringBoot结束关闭容器
+     */
+    @PreDestroy
+    public void shutdown() {
+        if (container != null) {
+            container.stop();
+        }
     }
 }

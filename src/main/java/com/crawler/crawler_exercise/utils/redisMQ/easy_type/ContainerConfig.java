@@ -12,6 +12,7 @@ import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ErrorHandler;
 
 @Component
 @Slf4j
@@ -21,6 +22,20 @@ public class ContainerConfig {
     private StringRedisTemplate redisTemplate;
     @Autowired
     private ConsumerListener consumerListener;
+    /**
+     * Redis Stream 监听线程（cTaskExecutor-*）在轮询 XREADGROUP 时，Redis 连接已关闭，
+     * 导致 RedisSystemException 包装的 RedisException: Connection closed 被 StreamPollTask 抛出并记录为 ERROR。
+     *
+     * 关键堆栈（精简主链）：
+     *
+     * StreamPollTask.run → StreamPollTask.readRecords → DefaultStreamMessageListenerContainer.lambda$getReadFunction$4
+     * RedisTemplate.execute → LettuceStreamCommands.xReadGroup
+     * LettuceConnection.await → LettuceConnection.convertLettuceAccessException
+     * RedisSystemException: Redis exception
+     * Caused by: RedisException: Connection closed（DefaultEndpoint.cancelCommands / CommandHandler.channelInactive）
+     */
+    @Autowired
+    private ErrorHandler errorHandler;
 
     private StreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
 
@@ -46,11 +61,14 @@ public class ContainerConfig {
             redisTemplate.opsForStream().createGroup(RedisMqConst.STREAM_KEY, RedisMqConst.GROUP);
         }catch (Exception e){}
         // 2. 启动监听容器
-        container = StreamMessageListenerContainer.create(redisTemplate.getConnectionFactory(),
+        StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
                 StreamMessageListenerContainer
                         .StreamMessageListenerContainerOptions
                         .builder()
-                        .build());
+                        .errorHandler(errorHandler) //吞掉停止项目时的报错
+                        .build();
+
+        container = StreamMessageListenerContainer.create(redisTemplate.getConnectionFactory(), options);
 
         /**
          * 【XREADGROUP 监听 / 读取消息命令】
@@ -71,15 +89,4 @@ public class ContainerConfig {
         container.start();
     }
 
-    /**
-     * 2026-01-05: 加了也没用！
-     * @PostConstruct 是SpringBoot启动时创建容器
-     * @PreDestroy 是SpringBoot结束关闭容器
-     */
-    @PreDestroy
-    public void shutdown() {
-        if (container != null) {
-            container.stop();
-        }
-    }
 }

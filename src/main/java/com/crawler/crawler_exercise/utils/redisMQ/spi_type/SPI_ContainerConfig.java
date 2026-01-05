@@ -13,6 +13,7 @@ import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ErrorHandler;
 
 import java.util.List;
 
@@ -27,6 +28,8 @@ public class SPI_ContainerConfig {
 
     @Autowired
     private List<RedisConsumerRegistrar> registrars;
+    @Autowired
+    private ErrorHandler errorHandler;
 
     private StreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
 
@@ -34,11 +37,13 @@ public class SPI_ContainerConfig {
     public void init(){
 
         // 2. 启动监听容器
-        container = StreamMessageListenerContainer
-                .create(redisTemplate.getConnectionFactory(),
+        StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions
                         .builder()
-                        .build());
+                        .errorHandler(errorHandler) //吞掉停止项目时的报错（详见com.crawler.crawler_exercise.utils.redisMQ.easy_type.ContainerConfig讲解）
+                        .build();
+
+        container = StreamMessageListenerContainer.create(redisTemplate.getConnectionFactory(), options);
 
         for (RedisConsumerRegistrar r:registrars){
             for (RedisConsumerDef def : r.consumers()) {
@@ -56,15 +61,4 @@ public class SPI_ContainerConfig {
         container.start();
     }
 
-    /**
-     * 2026-01-05: 加了也没用！
-     * @PostConstruct 是SpringBoot启动时创建容器
-     * @PreDestroy 是SpringBoot结束关闭容器
-     */
-    @PreDestroy
-    public void shutdown() {
-        if (container != null) {
-            container.stop();
-        }
-    }
 }

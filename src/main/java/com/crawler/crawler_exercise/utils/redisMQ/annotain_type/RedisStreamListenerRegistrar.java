@@ -135,18 +135,22 @@ public class RedisStreamListenerRegistrar implements SmartInitializingSingleton,
      * 只是原样返回生产者的消息String，反序列化交给对应的消费者
      */
     private void invokeString(
-            Object bean,
-            Method method,
-            MapRecord<String, String, String> record,
-            RedisStreamListener listener) {
+            Object bean, // Spring 容器里的 真实 Bean 实例
+            Method method, // Spring 容器里的 真实 Bean 实例
+            MapRecord<String, String, String> record, // Redis Stream 的一条消息
+            RedisStreamListener listener // 注解实例
+            ) {
 
         try {
+            // 取消息体
             String message = record.getValue().get("data");
-
             method.setAccessible(true);
+
+            //反射调用自定义注解所对应的业务方法
             method.invoke(bean, message);
 
             if (listener.autoAck()) {
+                // 等价于[XACK]命令
                 redisTemplate.opsForStream().acknowledge(
                         record.getStream(),
                         listener.group(),

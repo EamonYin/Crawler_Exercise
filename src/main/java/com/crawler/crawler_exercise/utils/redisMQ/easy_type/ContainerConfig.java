@@ -71,6 +71,13 @@ public class ContainerConfig {
         container = StreamMessageListenerContainer.create(redisTemplate.getConnectionFactory(), options);
 
         /**
+         * 注册监听规则
+         */
+        container.receive(Consumer.from(RedisMqConst.GROUP,RedisMqConst.CONSUMER),
+                StreamOffset.create(RedisMqConst.STREAM_KEY, ReadOffset.lastConsumed()),
+                consumerListener);
+
+        /**
          * 【XREADGROUP 监听 / 读取消息命令】
          *
          * 下面的代码等价于
@@ -82,10 +89,6 @@ public class ContainerConfig {
          * XREADGROUP GROUP demo-group consumer-1 COUNT 1 BLOCK 0 STREAMS demo-stream >
          * 结尾“>”含义：只读取这个【消费者组】从未处理过的新消息
          */
-        container.receive(Consumer.from(RedisMqConst.GROUP,RedisMqConst.CONSUMER),
-                StreamOffset.create(RedisMqConst.STREAM_KEY, ReadOffset.lastConsumed()),
-                consumerListener);
-
         container.start();
     }
 

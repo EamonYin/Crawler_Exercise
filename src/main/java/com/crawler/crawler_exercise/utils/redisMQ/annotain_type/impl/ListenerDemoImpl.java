@@ -1,5 +1,6 @@
 package com.crawler.crawler_exercise.utils.redisMQ.annotain_type.impl;
 
+
 import com.crawler.crawler_exercise.utils.redisMQ.annotain_type.RedisStreamListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

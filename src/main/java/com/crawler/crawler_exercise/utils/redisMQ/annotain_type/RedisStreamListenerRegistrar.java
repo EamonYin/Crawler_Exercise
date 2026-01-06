@@ -23,8 +23,15 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "redis.mq.mode", havingValue = "annotain", matchIfMissing = true) //用于切换 annotain / spi / easy 三种redis实现
 public class RedisStreamListenerRegistrar implements SmartInitializingSingleton, ApplicationContextAware {
 
+    /** 用于查找带有自定义注解 */
     private ApplicationContext applicationContext;
 
+    /**
+     * Redis Stream 消息监听容器
+     * 职责：
+     *   - 负责 XREADGROUP 拉取消息
+     *   - 将消息分发给已注册的监听器
+     */
     @Autowired
     private StreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
 
@@ -37,35 +44,39 @@ public class RedisStreamListenerRegistrar implements SmartInitializingSingleton,
 
         beans.values().forEach(bean -> {
             for (Method method : bean.getClass().getDeclaredMethods()) {
-                com.crawler.crawler_exercise.utils.redisMQ.annotain_type.RedisStreamListener listener =
-                        AnnotationUtils.findAnnotation(method, com.crawler.crawler_exercise.utils.redisMQ.annotain_type.RedisStreamListener.class);
+                RedisStreamListener listener =
+                        AnnotationUtils.findAnnotation(method, RedisStreamListener.class);
 
                 if (listener != null) {
+                    // 注册为 Redis Stream 消费者
                     registerListener(bean, method, listener);
                 }
             }
         });
     }
 
-    private void registerListener(Object bean, Method method, com.crawler.crawler_exercise.utils.redisMQ.annotain_type.RedisStreamListener listener) {
+    private void registerListener(Object bean, Method method, RedisStreamListener listener) {
 
+        // 读取注解配置
         String streamKey = listener.streamKey();
         String group = listener.group();
+        // 生成 Consumer 名称
         String consumer = listener.consumer().isEmpty()
                 ? UUID.randomUUID().toString()
                 : listener.consumer();
 
         // 确保 group 存在
         try {
+            // 等价于[XGROUP CREATE]
             redisTemplate.opsForStream()
                     .createGroup(streamKey, group);
         } catch (Exception ignore) {
         }
 
         container.receive(
-                Consumer.from(group, consumer),
-                StreamOffset.create(streamKey, ReadOffset.lastConsumed()),
-                message -> invokeString(bean, method, message, listener)
+                Consumer.from(group, consumer), // 指定消费组 & 消费者
+                StreamOffset.create(streamKey, ReadOffset.lastConsumed()), // 从未 ack 的位置开始
+                message -> invokeString(bean, method, message, listener) // 消息回调
         );
     }
 
@@ -85,7 +96,7 @@ public class RedisStreamListenerRegistrar implements SmartInitializingSingleton,
             Object bean,
             Method method,
             MapRecord<String, String, String> record,
-            com.crawler.crawler_exercise.utils.redisMQ.annotain_type.RedisStreamListener listener) {
+            RedisStreamListener listener) {
 
         try {
             //等价于：json = {"orderId":1001,"userId":2002}
@@ -127,7 +138,7 @@ public class RedisStreamListenerRegistrar implements SmartInitializingSingleton,
             Object bean,
             Method method,
             MapRecord<String, String, String> record,
-            com.crawler.crawler_exercise.utils.redisMQ.annotain_type.RedisStreamListener listener) {
+            RedisStreamListener listener) {
 
         try {
             String message = record.getValue().get("data");

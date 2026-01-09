@@ -11,7 +11,6 @@ import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.stereotype.Component;
 
@@ -86,13 +85,7 @@ public class DelayRedisStreamListenerRegistrar implements SmartInitializingSingl
 
     private void ensureGroup(String streamKey, String group) {
         try {
-            redisTemplate.execute((RedisCallback<String>) connection -> {
-                byte[] rawKey = redisTemplate.getStringSerializer().serialize(streamKey);
-                if (rawKey == null) {
-                    return null;
-                }
-                return connection.streamCommands().xGroupCreate(rawKey, group, ReadOffset.latest(), true);
-            });
+            redisTemplate.opsForStream().createGroup(streamKey, group);
         } catch (Exception ignore) {
         }
     }

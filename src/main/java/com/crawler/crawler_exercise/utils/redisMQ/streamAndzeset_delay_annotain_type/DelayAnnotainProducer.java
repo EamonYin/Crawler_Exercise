@@ -18,6 +18,7 @@ public class DelayAnnotainProducer {
     }
 
     public void send(String streamKey, String message, long delayMillis) {
+        // 与 annotain_type 不同：这里先写入延时 ZSET，由调度器到期再 XADD 到 Stream。
         String delayKey = StreamZsetDelayKeys.delayQueueKey(streamKey);
         String payload = StreamZsetDelayKeys.encodePayload(message);
         long score = System.currentTimeMillis() + Math.max(0L, delayMillis);

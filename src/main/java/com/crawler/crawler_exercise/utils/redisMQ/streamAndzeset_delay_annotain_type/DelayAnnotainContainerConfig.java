@@ -12,6 +12,7 @@ import org.springframework.util.ErrorHandler;
 import java.time.Duration;
 
 @Configuration
+// 与 annotain_type 的配置类似，但只在 streamZsetDelay 模式启用。
 @ConditionalOnProperty(name = "redis.mq.mode", havingValue = "streamZsetDelay") //用于切换 annotain / spi / easy 三种redis实现
 public class DelayAnnotainContainerConfig {
 

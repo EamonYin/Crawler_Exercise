@@ -16,6 +16,7 @@ import java.util.Set;
 @Component
 @Slf4j
 @ConditionalOnProperty(name = "redis.mq.mode", havingValue = "streamZsetDelay")
+// 与 annotain_type 不同：增加调度器，把延时 ZSET 的到期消息转投到 Stream。
 public class StreamZsetDelayDispatcher {
 
     @Autowired

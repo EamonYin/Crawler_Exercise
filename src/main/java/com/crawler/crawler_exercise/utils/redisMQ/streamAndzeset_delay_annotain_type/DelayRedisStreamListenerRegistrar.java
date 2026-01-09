@@ -39,6 +39,7 @@ public class DelayRedisStreamListenerRegistrar implements SmartInitializingSingl
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    // 与 annotain_type 不同：额外维护 streamKey 集合，供延时调度器扫描对应的 ZSET。
     private final Set<String> streamKeys = ConcurrentHashMap.newKeySet();
 
     @Override

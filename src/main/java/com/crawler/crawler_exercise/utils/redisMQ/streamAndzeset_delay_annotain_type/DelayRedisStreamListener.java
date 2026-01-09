@@ -5,6 +5,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+// 与 annotain_type 的 RedisStreamListener 对应，但仅用于 streamZsetDelay 模式的消费端注册。
 public @interface DelayRedisStreamListener {
 
     // Stream key

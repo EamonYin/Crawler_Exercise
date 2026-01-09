@@ -5,6 +5,7 @@ import com.crawler.crawler_exercise.entiy.dto.RedisMQPayDTO;
 import com.crawler.crawler_exercise.utils.redisMQ.annotain_type.AnnotainProducer;
 import com.crawler.crawler_exercise.utils.redisMQ.easy_type.Producer;
 import com.crawler.crawler_exercise.utils.redisMQ.spi_type.SPI_Producer;
+import com.crawler.crawler_exercise.utils.redisMQ.streamAndzeset_delay_annotain_type.DelayAnnotainProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,9 @@ public class RedisStreamToMQController {
 
     @Autowired
     private AnnotainProducer annotainProducer;
+
+    @Autowired
+    private DelayAnnotainProducer delayAnnotainProducer;
 
 //    /**
 //     * 效果说明：
@@ -73,6 +77,15 @@ public class RedisStreamToMQController {
         redisMQPayDTO.setId(1);
         redisMQPayDTO.setPayOrderId("order-1");
         annotainProducer.send("demo:mq:redis:pay", JSON.toJSONString(redisMQPayDTO));
+    }
+
+    @GetMapping("/sendV6")
+    public void sendMessageV6(){
+        delayAnnotainProducer.send("delay:mq:redis:order","orderId=1",2000);
+        RedisMQPayDTO redisMQPayDTO = new RedisMQPayDTO();
+        redisMQPayDTO.setId(1);
+        redisMQPayDTO.setPayOrderId("order-1");
+        delayAnnotainProducer.send("delay:mq:redis:pay", JSON.toJSONString(redisMQPayDTO));
     }
 
 }

@@ -81,7 +81,7 @@ public class RedisStreamToMQController {
 
     @GetMapping("/sendV6")
     public void sendMessageV6(){
-        delayAnnotainProducer.send("delay:mq:redis:order","orderId=1",2000);
+        delayAnnotainProducer.send("delay:mq:redis:order","orderId=1",200000);
         RedisMQPayDTO redisMQPayDTO = new RedisMQPayDTO();
         redisMQPayDTO.setId(1);
         redisMQPayDTO.setPayOrderId("order-1");

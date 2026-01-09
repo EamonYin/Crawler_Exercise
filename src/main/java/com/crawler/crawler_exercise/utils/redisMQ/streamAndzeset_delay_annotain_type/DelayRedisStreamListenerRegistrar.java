@@ -70,7 +70,10 @@ public class DelayRedisStreamListenerRegistrar implements SmartInitializingSingl
                 : listener.consumer();
 
         // 确保 group 存在
-        ensureGroup(streamKey, group);
+        try {
+            redisTemplate.opsForStream().createGroup(streamKey, group);
+        } catch (Exception ignore) {
+        }
 
         container.receive(
                 Consumer.from(group, consumer), // 指定消费组 & 消费者
@@ -81,13 +84,6 @@ public class DelayRedisStreamListenerRegistrar implements SmartInitializingSingl
 
     Set<String> getStreamKeys() {
         return streamKeys;
-    }
-
-    private void ensureGroup(String streamKey, String group) {
-        try {
-            redisTemplate.opsForStream().createGroup(streamKey, group);
-        } catch (Exception ignore) {
-        }
     }
 
     /**

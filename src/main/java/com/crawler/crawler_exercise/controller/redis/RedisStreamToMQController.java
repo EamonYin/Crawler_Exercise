@@ -100,7 +100,6 @@ public class RedisStreamToMQController {
     public void sendRedissonMessageV7(){
         redisDelayedQueueProducerUtils.addQueue("支付订单来了！",1, TimeUnit.MINUTES, PayListener.class.getName());
         redisDelayedQueueProducerUtils.addQueue("订单订单来了！",2, TimeUnit.MINUTES, OrderListener.class.getName());
-
     }
 
 }

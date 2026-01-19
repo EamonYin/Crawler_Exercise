@@ -11,6 +11,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.Map;
 
 /**
@@ -38,8 +42,9 @@ public class RedisDelayedQueueInit implements ApplicationContextAware {
      * @param redisDelayedQueueListener 任务回调监听
      */
     private <T> void startThread(String queueName, RedisDelayedQueueListener redisDelayedQueueListener) {
+        // 阻塞队列负责“消费”。
         RBlockingQueue<T> blockingFairQueue = redissonClient.getBlockingQueue(queueName);
-        // Start delayed queue scheduler so expired items are moved into blocking queue.
+        // 延迟队列负责“到期搬运”。
         RDelayedQueue<T> delayedQueue = redissonClient.getDelayedQueue(blockingFairQueue);
 
         Thread thread = new Thread(() -> {

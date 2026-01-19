@@ -2,6 +2,9 @@ package com.crawler.crawler_exercise.controller.redis;
 
 import com.alibaba.fastjson.JSON;
 import com.crawler.crawler_exercise.entiy.dto.RedisMQPayDTO;
+import com.crawler.crawler_exercise.utils.redisMQ.Redisson.RedisDelayedQueueProducerUtils;
+import com.crawler.crawler_exercise.utils.redisMQ.Redisson.listener.OrderListener;
+import com.crawler.crawler_exercise.utils.redisMQ.Redisson.listener.PayListener;
 import com.crawler.crawler_exercise.utils.redisMQ.annotain_type.AnnotainProducer;
 import com.crawler.crawler_exercise.utils.redisMQ.easy_type.Producer;
 import com.crawler.crawler_exercise.utils.redisMQ.spi_type.SPI_Producer;
@@ -10,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/redis/stream")
@@ -29,6 +34,9 @@ public class RedisStreamToMQController {
 
     @Autowired
     private DelayAnnotainProducer delayAnnotainProducer;
+
+    @Autowired
+    private RedisDelayedQueueProducerUtils redisDelayedQueueProducerUtils;
 
 //    /**
 //     * 效果说明：
@@ -81,11 +89,18 @@ public class RedisStreamToMQController {
 
     @GetMapping("/sendV6")
     public void sendMessageV6(){
-        delayAnnotainProducer.send("delay:mq:redis:order","orderId=1",200000);
+        delayAnnotainProducer.send("delay:mq:redis:order","orderId=1",10000);
         RedisMQPayDTO redisMQPayDTO = new RedisMQPayDTO();
         redisMQPayDTO.setId(1);
         redisMQPayDTO.setPayOrderId("order-1");
         delayAnnotainProducer.send("delay:mq:redis:pay", JSON.toJSONString(redisMQPayDTO));
+    }
+
+    @GetMapping("/redisson/sendV7")
+    public void sendRedissonMessageV7(){
+        redisDelayedQueueProducerUtils.addQueue("支付订单来了！",1, TimeUnit.MINUTES, PayListener.class.getName());
+        redisDelayedQueueProducerUtils.addQueue("订单订单来了！",2, TimeUnit.MINUTES, OrderListener.class.getName());
+
     }
 
 }

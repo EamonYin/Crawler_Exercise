@@ -55,6 +55,21 @@ public class CompletableFutureDemo {
 
         // 关闭自定义线程池，如果没有这句，则在停机的时候spring来销毁
         threadPoolExecutor.shutdown();
+
+        // 虚拟线程（JDK19+）
+        Thread thread = Thread.startVirtualThread(() -> {
+            System.out.println("虚拟线程");
+        });
+
+        ExecutorService virtualThreadPool = Executors.newVirtualThreadPerTaskExecutor();
+        CompletableFuture<String> virtualCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            String res = "这里是CompletableFuture创建的虚拟线程";
+//            System.out.println(res);
+            return res;
+        }, virtualThreadPool);
+        String s2 = virtualCompletableFuture.get();
+        System.out.println(s2);
+
     }
 
 }

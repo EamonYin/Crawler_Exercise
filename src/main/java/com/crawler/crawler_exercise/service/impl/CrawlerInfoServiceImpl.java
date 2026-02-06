@@ -16,6 +16,7 @@ public class CrawlerInfoServiceImpl extends ServiceImpl<CrawlerInfoMapper, Crawl
     @Autowired
     CrawlerInfoMapper crawlerInfoMapper;
 
+    @Transactional
     @Override
     public void insertCrawlerInfo(CrawlerInfo crawlerInfo) {
         try {
@@ -24,6 +25,13 @@ public class CrawlerInfoServiceImpl extends ServiceImpl<CrawlerInfoMapper, Crawl
         } catch (Exception e) {
             log.error("CrawlerInfoServiceImpl-insertCrawlerInfo插入失败:{}", e.getMessage());
         }
+    }
+
+    @Transactional
+    @Override
+    public String insertCrawlerInfoAndError(CrawlerInfo crawlerInfo) {
+        crawlerInfoMapper.insert(crawlerInfo);
+        throw new RuntimeException();
     }
 
     @Override

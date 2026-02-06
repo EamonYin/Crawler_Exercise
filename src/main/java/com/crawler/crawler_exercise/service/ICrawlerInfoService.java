@@ -7,5 +7,7 @@ public interface ICrawlerInfoService extends IService<CrawlerInfo> {
 
     public void insertCrawlerInfo(CrawlerInfo crawlerInfo);
 
+    public String insertCrawlerInfoAndError(CrawlerInfo crawlerInfo);
+
     void updateWithLongTransaction(Long id, String info);
 }

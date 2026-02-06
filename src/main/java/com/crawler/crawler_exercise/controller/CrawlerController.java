@@ -1,7 +1,11 @@
 package com.crawler.crawler_exercise.controller;
 
 import com.crawler.crawler_exercise.config.YunWuConfig;
+import com.crawler.crawler_exercise.entiy.CrawlerInfo;
+import com.crawler.crawler_exercise.service.ICrawlerInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -13,6 +17,8 @@ public class CrawlerController {
 
     @Resource
     YunWuConfig yunWuConfig;
+    @Autowired
+    ICrawlerInfoService crawlerInfoService;
 
     public static void main(String[] args) throws InterruptedException {
         String result = "";
@@ -36,5 +42,22 @@ public class CrawlerController {
 //        toQwen.loginInQwen();
 
     }
+
+    @GetMapping("/testTransactional")
+    public void testTransactional(){
+
+        CrawlerInfo crawlerInfo = new CrawlerInfo();
+        crawlerInfo.setInfo("正确");
+
+        crawlerInfoService.insertCrawlerInfo(crawlerInfo);
+
+        CrawlerInfo crawlerInfo2 = new CrawlerInfo();
+        crawlerInfo2.setInfo("错误");
+
+        String s = crawlerInfoService.insertCrawlerInfoAndError(crawlerInfo2);
+
+    }
+
+
 
 }

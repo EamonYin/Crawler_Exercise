@@ -62,4 +62,26 @@ public class CrawlerInfoServiceImpl extends ServiceImpl<CrawlerInfoMapper, Crawl
             throw new RuntimeException("长事务执行失败", e);
         }
     }
+
+    @Override
+    @Transactional
+    public boolean simulatePlaceOrderFailure(CrawlerInfo crawlerInfo1, CrawlerInfo crawlerInfo2) {
+        crawlerInfoMapper.insert(crawlerInfo1);
+        log.info("订单表插入成功，准备调用三方支付接口");
+
+        try {
+            mockThirdPartyPaymentApi();
+        } catch (Exception e) {
+            log.error("三方支付接口报错，触发事务回滚", e);
+            throw new RuntimeException("三方支付接口调用失败", e);
+        }
+
+        crawlerInfoMapper.insert(crawlerInfo2);
+        log.info("支付表插入成功");
+        return true;
+    }
+
+    private void mockThirdPartyPaymentApi() {
+        throw new RuntimeException("模拟三方API异常");
+    }
 }

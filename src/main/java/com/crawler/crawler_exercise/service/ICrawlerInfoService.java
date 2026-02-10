@@ -10,4 +10,6 @@ public interface ICrawlerInfoService extends IService<CrawlerInfo> {
     public String insertCrawlerInfoAndError(CrawlerInfo crawlerInfo);
 
     void updateWithLongTransaction(Long id, String info);
+
+    boolean simulatePlaceOrderFailure(CrawlerInfo crawlerInfo1, CrawlerInfo crawlerInfo2);
 }

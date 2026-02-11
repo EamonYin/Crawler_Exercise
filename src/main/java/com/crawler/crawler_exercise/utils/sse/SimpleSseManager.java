@@ -5,9 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -31,5 +29,21 @@ public class SimpleSseManager {
                         .id(id)
                         .data(message)
         );
+    }
+
+    public void closeEmitter(String id) {
+        closeEmitter(id, null);
+    }
+
+    public void closeEmitter(String id, Throwable cause) {
+        SseEmitter emitter = sseMap.remove(id);
+        if (emitter == null) {
+            return;
+        }
+        if (cause == null) {
+            emitter.complete();
+            return;
+        }
+        emitter.completeWithError(cause);
     }
 }

@@ -44,6 +44,7 @@ public class SpringAIDemoServiceImpl implements ISpringAIDemoService {
         }
 
         log.info("【Demo主流程】收到问题: {}", input.getQuestion());
+        // 每次新请求开始前清空 ThreadLocal 里的工具调用痕迹，避免把上一次请求的 usedTools/sources 串到本次响应。
         toolTraceContext.clear();
         String answer = springAIDemoChatClient.prompt()
                 .system("""

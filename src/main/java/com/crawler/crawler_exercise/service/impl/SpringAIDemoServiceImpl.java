@@ -28,6 +28,7 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -53,6 +54,37 @@ public class SpringAIDemoServiceImpl implements ISpringAIDemoService {
     private static final int PROFILE_EXTRACT_TURNS = 2;
 
     //配置
+    @Autowired
+    @Qualifier("springAIDemoChatClient")
+    private ChatClient springAIDemoChatClient;
+    @Autowired
+    private SpringAgentMilvusConfig springAgentMilvusConfig;
+    @Autowired
+    private ToolTraceContext toolTraceContext;
+
+    // tool calling
+    @Autowired
+    private CurrentTimeTool currentTimeTool;
+    @Autowired
+    private MilvusKnowledgeSearchTool milvusKnowledgeSearchTool;
+    @Autowired
+    private SearxngWebSearchTool searxngWebSearchTool;
+
+    // 记忆入库的增删改查
+    @Autowired
+    private SpringAgentMessageLogMapper springAgentMessageLogMapper;
+    @Autowired
+    private SpringAgentConversationSummaryMapper springAgentConversationSummaryMapper;
+    @Autowired
+    private SpringAgentUserProfileMapper springAgentUserProfileMapper;
+    @Autowired
+    private SpringAgentMemoryJobMapper springAgentMemoryJobMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+/** 【这种构造器写法是Spring推荐的（单构造器）】
+ *
+    //配置
     private final ChatClient springAIDemoChatClient;
     private final SpringAgentMilvusConfig springAgentMilvusConfig;
     private final ToolTraceContext toolTraceContext;
@@ -68,9 +100,6 @@ public class SpringAIDemoServiceImpl implements ISpringAIDemoService {
     private final SpringAgentUserProfileMapper springAgentUserProfileMapper;
     private final SpringAgentMemoryJobMapper springAgentMemoryJobMapper;
     private final ObjectMapper objectMapper;
-
-    // 显式注入 demo 专用 ChatClient，确保该链路固定使用 OpenAI(yunwu) 模型，
-    // 不受全局 @Primary ChatModel（DashScope）影响。
     public SpringAIDemoServiceImpl(@Qualifier("springAIDemoChatClient") ChatClient springAIDemoChatClient,
                                    SpringAgentMilvusConfig springAgentMilvusConfig,
                                    CurrentTimeTool currentTimeTool,
@@ -94,6 +123,7 @@ public class SpringAIDemoServiceImpl implements ISpringAIDemoService {
         this.springAgentMemoryJobMapper = springAgentMemoryJobMapper;
         this.objectMapper = objectMapper;
     }
+**/
 
     @Override
     public SpringAIDemoChatOutput demoChat(SpringAIDemoChatInput input) {

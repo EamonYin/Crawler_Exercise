@@ -224,6 +224,12 @@
             <version>${langchain4j.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-bge-small-zh-v15-q</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+
         <!-- 中文分词 start-->
         <dependency>
             <groupId>dev.langchain4j</groupId>

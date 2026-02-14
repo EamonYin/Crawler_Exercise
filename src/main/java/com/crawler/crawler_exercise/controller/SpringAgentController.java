@@ -1,7 +1,9 @@
 package com.crawler.crawler_exercise.controller;
 
 import com.crawler.crawler_exercise.entiy.input.SpringAIDemoChatInput;
+import com.crawler.crawler_exercise.entiy.input.SpringAIDemoKbInsertInput;
 import com.crawler.crawler_exercise.entiy.output.SpringAIDemoChatOutput;
+import com.crawler.crawler_exercise.entiy.output.SpringAIDemoKbInsertOutput;
 import com.crawler.crawler_exercise.service.ISpringAIDemoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +23,10 @@ public class SpringAgentController {
     @PostMapping("/agent/demoChat")
     public SpringAIDemoChatOutput demoChat(@RequestBody SpringAIDemoChatInput input) {
         return springAIDemoService.demoChat(input);
+    }
+
+    @PostMapping("/agent/kb/insert")
+    public SpringAIDemoKbInsertOutput insertKnowledge(@RequestBody SpringAIDemoKbInsertInput input) {
+        return springAIDemoService.insertKnowledge(input);
     }
 }

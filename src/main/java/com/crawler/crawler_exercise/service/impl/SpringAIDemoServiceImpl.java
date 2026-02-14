@@ -135,6 +135,8 @@ public class SpringAIDemoServiceImpl implements ISpringAIDemoService {
         String userId = input.getUserId().trim();
         String question = input.getQuestion().trim();
         int turnNo = nextTurnNo(conversationId);
+        String key = toolTraceContext.currentThreadKey();
+        log.info("【Demo主流程】demoChat开始, key={}, conversationId={}, userId={}, turnNo={}", key, conversationId, userId, turnNo);
 
         //【记忆相关】
         // 三层记忆读取：短期消息 + 长期摘要 + 用户画像
@@ -187,6 +189,7 @@ public class SpringAIDemoServiceImpl implements ISpringAIDemoService {
         output.setUsedTools(toolTraceContext.getUsedTools());
         output.setSources(toolTraceContext.getSources());
         log.info("【Demo主流程】响应输出完成，answer长度={}", finalAnswer.length());
+        log.info("【Demo主流程】demoChat结束, key={}, conversationId={}, userId={}, turnNo={}", key, conversationId, userId, turnNo);
         return output;
     }
 

@@ -11,6 +11,7 @@ import java.util.List;
 public class ToolTraceContext {
 
     // 使用 ThreadLocal 保存“当前请求线程”的工具调用轨迹，避免并发请求互相污染。
+    // ThreadLocal.withInitial(ArrayList::new) 是懒初始化。第一次在某线程调用 usedTools.get()/sources.get() 时，才给这个线程创建自己的 List。
     private final ThreadLocal<List<String>> usedTools = ThreadLocal.withInitial(ArrayList::new);
     private final ThreadLocal<List<String>> sources = ThreadLocal.withInitial(ArrayList::new);
 
